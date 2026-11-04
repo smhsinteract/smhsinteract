@@ -348,6 +348,7 @@
     .msg-content { display: flex; flex-direction: column; }
     .msg-sender { font-size: 11px; color: #8e8e8e; margin-bottom: 3px; margin-left: 2px; }
     .msg-bubble { background: #efefef; color: #000; padding: 9px 13px; border-radius: 18px; font-size: 14px; max-width: 230px; word-break: break-word; line-height: 1.35; }
+    .msg-image { display: block; width: 100%; max-width: 230px; max-height: 360px; object-fit: contain; border-radius: 14px; }
 
     /* Notification Banner */
     .notification-banner {
@@ -481,12 +482,12 @@
       </div>
     </div>
 
-    <!-- Dropdown Notification (Gaeun Trigger) -->
+    <!-- Realtime DM Notification -->
     <div class="notification-banner" id="noti-banner" onclick="handleNotiClick()">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" class="noti-avatar">
+      <img id="noti-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" class="noti-avatar" alt="">
       <div class="noti-content">
-        <div class="noti-title">gaeun_l</div>
-        <div class="noti-desc">?</div>
+        <div class="noti-title" id="noti-title">gaeun_l</div>
+        <div class="noti-desc" id="noti-desc">?</div>
       </div>
     </div>
 
@@ -557,6 +558,23 @@
           <div class="dm-info">
             <div class="dm-name">gaeun_l</div>
             <div class="dm-last-msg dm-unread">뭐해ㅋㅋ · 방금 전</div>
+          </div>
+        </div>
+        <div id="chohee-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', 'chohee_g', { chatId: 'chohee' })">
+          <img class="list-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          <div class="dm-info">
+            <div class="dm-name">chohee_g</div>
+            <div class="dm-last-msg dm-unread">?????/ㅁㅊ? · 방금 전</div>
+          </div>
+        </div>
+        <div id="chohee-group-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', '공초희 외 11명 &gt;', { chatId: 'chohee-group' })">
+          <div class="group-avatar-stack">
+            <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+            <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">공초희, 이연우, 이예진 외 9명</div>
+            <div class="dm-last-msg dm-unread">공초희: 사진 · 방금 전</div>
           </div>
         </div>
       </div>
@@ -674,6 +692,12 @@
   let historyStack = [];
   let currentState = null; 
   let gaeunTriggered = false;
+  let choheeTriggered = false;
+  let notificationTimeout = null;
+
+  function getUnreadDmCount() {
+    return 1 + Number(gaeunTriggered) + (choheeTriggered ? 2 : 0);
+  }
 
   function goHomeFeed() {
     historyStack = []; // Reset stack
@@ -708,13 +732,15 @@
     document.getElementById('ig-right-action').innerHTML = isMain ? `
       <div class="insta-dm-btn" onclick="navigate('view-dm-inbox', '메시지')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        <span class="dm-badge">${gaeunTriggered ? '2' : '1'}</span>
+        <span class="dm-badge">${getUnreadDmCount()}</span>
       </div>` : '';
 
     // Title clickable for DM members
     const titleEl = document.getElementById('ig-title');
-    if (state.viewId === 'view-dm-chat' && state.context.chatId === 'group') {
+    if (state.viewId === 'view-dm-chat' && state.context && state.context.chatId === 'group') {
       titleEl.onclick = () => navigate('view-list', '참여 인원', { type: 'dm-members' });
+    } else if (state.viewId === 'view-dm-chat' && state.context && state.context.chatId === 'chohee-group') {
+      titleEl.onclick = () => navigate('view-list', '참여 인원', { type: 'chohee-members' });
     } else {
       titleEl.onclick = null;
     }
@@ -764,6 +790,8 @@
 
     if(type === 'dm-members') {
       arr = ["seohyun_w", "seoyoon_j", "jimin_koo", "jiwoo_lee", "soomin_oh", "jiyoon_n", "hyunseo_kwon", "050412_"];
+    } else if(type === 'chohee-members') {
+      arr = ["chohee_g", "yeonwoo_l", "yejin_l", "yoona_k", "dain_lee", "seowoo_l", "haena_p", "jaein_p", "sooyeon_c", "seoeun_c", "seoin_h", "050412_"];
     } else {
       arr = type === 'followers' ? [...db[targetUser].followers] : [...db[targetUser].following];
       if(arr.includes("050412_")) { arr = arr.filter(x => x !== "050412_"); arr.unshift("050412_"); }
@@ -804,15 +832,21 @@
       ha.following.push(target);
       if(!t.followers.includes("050412_")) t.followers.push("050412_");
       
-      // Trigger: Gaeun Realtime DM
+      // Realtime DM triggers
       if(target === "gaeun_l" && !gaeunTriggered) {
         gaeunTriggered = true;
         setTimeout(() => {
-          document.getElementById('noti-banner').classList.add('show');
           document.getElementById('gaeun-dm-item').style.display = 'flex';
-          const badge = document.getElementById('dm-badge');
-          if(badge) badge.innerText = '2';
-          setTimeout(() => document.getElementById('noti-banner').classList.remove('show'), 4000);
+          showDmNotification("gaeun_l", "?", "gaeun");
+        }, 500);
+      }
+
+      if(target === "chohee_g" && !choheeTriggered) {
+        choheeTriggered = true;
+        setTimeout(() => {
+          document.getElementById('chohee-dm-item').style.display = 'flex';
+          document.getElementById('chohee-group-dm-item').style.display = 'flex';
+          showDmNotification("chohee_g", "?????/ㅁㅊ?", "chohee");
         }, 500);
       }
     }
@@ -820,9 +854,23 @@
     renderState(currentState, false);
   }
 
+  function showDmNotification(username, message, chatId) {
+    const banner = document.getElementById('noti-banner');
+    document.getElementById('noti-avatar').src = db[username].pfp;
+    document.getElementById('noti-title').innerText = username;
+    document.getElementById('noti-desc').innerText = message;
+    banner.dataset.chatId = chatId;
+    banner.classList.add('show');
+    clearTimeout(notificationTimeout);
+    notificationTimeout = setTimeout(() => banner.classList.remove('show'), 4000);
+  }
+
   function handleNotiClick() {
-    document.getElementById('noti-banner').classList.remove('show');
-    navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' });
+    const banner = document.getElementById('noti-banner');
+    const chatId = banner.dataset.chatId || 'gaeun';
+    banner.classList.remove('show');
+    if(chatId === 'chohee') navigate('view-dm-chat', 'chohee_g', { chatId: 'chohee' });
+    else navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' });
   }
 
   // 6. DM Chat Render
@@ -835,6 +883,12 @@
     ],
     gaeun: [
       { s: "gaeun_l", t: "?" }, { s: "gaeun_l", t: "뭐해ㅋㅋ" }
+    ],
+    chohee: [
+      { s: "chohee_g", t: "?????/ㅁㅊ?" }
+    ],
+    "chohee-group": [
+      { s: "chohee_g", type: "image", src: "follow-notification.svg", alt: "하경이 공초희를 팔로우했다는 알림 캡처" }
     ]
   };
 
@@ -845,17 +899,20 @@
     msgs[chatId].forEach(m => {
       const u = db[m.s];
       const header = m.s !== prev;
+      const messageContent = m.type === "image"
+        ? `<img class="msg-image" src="${m.src}" alt="${m.alt}">`
+        : `<div class="msg-bubble">${m.t}</div>`;
       if(header) {
         box.innerHTML += `
           <div class="msg-group">
             <img class="msg-avatar" src="${u.pfp}" onclick="navigate('view-profile', '${u.u}')">
             <div class="msg-content">
               <div class="msg-sender">${u.n} (@${u.u})</div>
-              <div class="msg-bubble">${m.t}</div>
+              ${messageContent}
             </div>
           </div>`;
       } else {
-        box.innerHTML += `<div class="msg-group"><div style="width:36px;"></div><div class="msg-content"><div class="msg-bubble">${m.t}</div></div></div>`;
+        box.innerHTML += `<div class="msg-group"><div style="width:36px;"></div><div class="msg-content">${messageContent}</div></div>`;
       }
       prev = m.s;
     });
