@@ -587,6 +587,12 @@
             </div>
             <span class="story-label">정채민</span>
           </div>
+          <div class="story-item" onclick="openYebinStory()">
+            <div class="story-ring">
+              <img class="story-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="류예빈 스토리">
+            </div>
+            <span class="story-label">류예빈</span>
+          </div>
         </div>
         <div class="feed-post">
           <div class="post-header">
@@ -697,6 +703,17 @@
       </div>
     </div>
 
+    <div class="story-viewer" id="yebin-story-viewer" aria-hidden="true">
+      <img class="story-photo" src="yebin-story.jpeg" alt="류예빈의 스토리 이미지">
+      <div class="story-shade"></div>
+      <div class="story-progress"><span></span></div>
+      <div class="story-header">
+        <img class="story-header-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+        <div class="story-header-name">yebin_r<span class="story-header-time">방금 전</span></div>
+        <button class="story-close" type="button" aria-label="스토리 닫기" onclick="closeYebinStory()">×</button>
+      </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
       <div class="nav-btn" onclick="goHomeFeed()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
@@ -765,6 +782,18 @@
 
   function closeChaeminStory() {
     const viewer = document.getElementById('chaemin-story-viewer');
+    viewer.classList.remove('active');
+    viewer.setAttribute('aria-hidden', 'true');
+  }
+
+  function openYebinStory() {
+    const viewer = document.getElementById('yebin-story-viewer');
+    viewer.classList.add('active');
+    viewer.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeYebinStory() {
+    const viewer = document.getElementById('yebin-story-viewer');
     viewer.classList.remove('active');
     viewer.setAttribute('aria-hidden', 'true');
   }
@@ -888,10 +917,10 @@
     document.getElementById('prof-followers').innerText = user.followers.length;
     document.getElementById('prof-following').innerText = user.following.length;
     const profileAvatar = document.getElementById('profile-avatar');
-    const hasStory = username === "chaemin_j";
+    const hasStory = username === "chaemin_j" || username === "yebin_r";
     profileAvatar.classList.toggle('has-story', hasStory);
     profileAvatar.alt = `${user.n} 프로필 사진`;
-    profileAvatar.onclick = hasStory ? openChaeminStory : null;
+    profileAvatar.onclick = username === "chaemin_j" ? openChaeminStory : username === "yebin_r" ? openYebinStory : null;
     
     const actBtn = document.getElementById('prof-action-container');
     if(username === "050412_") {
