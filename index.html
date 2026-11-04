@@ -306,9 +306,93 @@
     .reply-row { margin-left: 20px; color: #555; }
     .comment-author { font-weight: 600; margin-right: 5px; cursor: pointer; }
 
+    /* Stories */
+    .story-tray {
+      display: flex;
+      gap: 14px;
+      padding: 14px 12px 12px;
+      overflow-x: auto;
+      border-bottom: 1px solid #efefef;
+      scrollbar-width: none;
+    }
+    .story-tray::-webkit-scrollbar { display: none; }
+    .story-item {
+      flex: 0 0 66px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .story-ring {
+      width: 62px;
+      height: 62px;
+      padding: 3px;
+      border-radius: 50%;
+      background: linear-gradient(35deg, #ffd776, #f56040, #c13584, #833ab4);
+    }
+    .story-avatar {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 2px solid #fff;
+      border-radius: 50%;
+    }
+    .story-label { max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: #333; }
+
+    .story-viewer {
+      position: absolute;
+      inset: 0;
+      z-index: 3000;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      background: #111;
+      color: #fff;
+    }
+    .story-viewer.active { display: flex; }
+    .story-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .story-shade {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.36), transparent 27%, transparent 48%, rgba(0,0,0,.78));
+    }
+    .story-progress { position: relative; z-index: 1; display: flex; padding: 12px 10px 0; }
+    .story-progress span { width: 100%; height: 3px; border-radius: 3px; background: rgba(255,255,255,.9); }
+    .story-header { position: relative; z-index: 1; display: flex; align-items: center; gap: 9px; padding: 12px 14px; }
+    .story-header-avatar { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; object-fit: cover; }
+    .story-header-name { flex: 1; font-size: 13px; font-weight: 700; }
+    .story-header-time { margin-left: 5px; font-weight: 400; opacity: .75; }
+    .story-close {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(0,0,0,.3);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .story-comments {
+      position: relative;
+      z-index: 1;
+      max-height: 46%;
+      margin-top: auto;
+      padding: 12px 16px 34px;
+      overflow-y: auto;
+    }
+    .story-comments-title { margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+    .story-comment { display: flex; gap: 7px; margin-bottom: 8px; font-size: 13px; line-height: 1.35; }
+    .story-comment-author { flex: 0 0 auto; font-weight: 700; }
+    .story-comment-text { color: rgba(255,255,255,.96); word-break: keep-all; }
+
     /* Profile View */
     .profile-header-sec { padding: 16px; display: flex; align-items: center; }
     .profile-img-lg { width: 77px; height: 77px; border-radius: 50%; object-fit: cover; margin-right: 28px; }
+    .profile-img-lg.has-story { cursor: pointer; box-shadow: 0 0 0 3px #c13584, 0 0 0 6px #f77737; }
     .profile-stats { display: flex; flex: 1; justify-content: space-around; text-align: center; }
     .stat-num { font-weight: 700; font-size: 16px; }
     .stat-label { font-size: 12px; color: #666; }
@@ -496,6 +580,14 @@
       
       <!-- 3.1 Feed View -->
       <div class="view-section" id="view-feed">
+        <div class="story-tray" aria-label="스토리">
+          <div class="story-item" onclick="openChaeminStory()">
+            <div class="story-ring">
+              <img class="story-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="정채민 스토리">
+            </div>
+            <span class="story-label">정채민</span>
+          </div>
+        </div>
         <div class="feed-post">
           <div class="post-header">
             <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'jiwon_choi')">
@@ -521,7 +613,7 @@
       <!-- 3.2 Profile View -->
       <div class="view-section" id="view-profile">
         <div class="profile-header-sec">
-          <img class="profile-img-lg" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          <img class="profile-img-lg" id="profile-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
           <div class="profile-stats">
             <div><div class="stat-num" id="prof-posts">0</div><div class="stat-label">게시물</div></div>
             <div style="cursor:pointer;" onclick="navigate('view-list', '팔로워', { type:'followers' })"><div class="stat-num" id="prof-followers">0</div><div class="stat-label">팔로워</div></div>
@@ -586,6 +678,25 @@
 
     </div>
 
+    <div class="story-viewer" id="chaemin-story-viewer" aria-hidden="true">
+      <img class="story-photo" src="chaemin-story.jpeg" alt="정채민이 올린 뒷모습 사진">
+      <div class="story-shade"></div>
+      <div class="story-progress"><span></span></div>
+      <div class="story-header">
+        <img class="story-header-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+        <div class="story-header-name">chaemin_j<span class="story-header-time">방금 전</span></div>
+        <button class="story-close" type="button" aria-label="스토리 닫기" onclick="closeChaeminStory()">×</button>
+      </div>
+      <div class="story-comments">
+        <div class="story-comments-title">댓글 5개</div>
+        <div class="story-comment"><span class="story-comment-author">정희윤</span><span class="story-comment-text">ㅋㅋㅋ</span></div>
+        <div class="story-comment"><span class="story-comment-author">이채윤</span><span class="story-comment-text">ㅋㄱㅋㄱㅋㄱ</span></div>
+        <div class="story-comment"><span class="story-comment-author">안민아</span><span class="story-comment-text">ㅋㅋㅎㅋㅎㅋㅎㅎ</span></div>
+        <div class="story-comment"><span class="story-comment-author">안가윤</span><span class="story-comment-text">ㅋㄱㅋㄱㅋㄱㅋ</span></div>
+        <div class="story-comment"><span class="story-comment-author">권보미</span><span class="story-comment-text">하경아~ㅋㅋㅋㄷ</span></div>
+      </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
       <div class="nav-btn" onclick="goHomeFeed()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
@@ -644,6 +755,18 @@
       document.getElementById('insta-app').classList.add('active');
       goHomeFeed(); // 디폴트로 홈 피드 열기
     }
+  }
+
+  function openChaeminStory() {
+    const viewer = document.getElementById('chaemin-story-viewer');
+    viewer.classList.add('active');
+    viewer.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeChaeminStory() {
+    const viewer = document.getElementById('chaemin-story-viewer');
+    viewer.classList.remove('active');
+    viewer.setAttribute('aria-hidden', 'true');
   }
 
   // 3. Database (38 Users)
@@ -764,6 +887,11 @@
     document.getElementById('prof-name').innerText = user.n;
     document.getElementById('prof-followers').innerText = user.followers.length;
     document.getElementById('prof-following').innerText = user.following.length;
+    const profileAvatar = document.getElementById('profile-avatar');
+    const hasStory = username === "chaemin_j";
+    profileAvatar.classList.toggle('has-story', hasStory);
+    profileAvatar.alt = `${user.n} 프로필 사진`;
+    profileAvatar.onclick = hasStory ? openChaeminStory : null;
     
     const actBtn = document.getElementById('prof-action-container');
     if(username === "050412_") {
