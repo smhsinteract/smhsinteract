@@ -388,7 +388,20 @@
     .ask-profile-name { font-size: 15px; font-weight: 700; }
     .ask-profile-caption { margin-top: 4px; color: #7b8190; font-size: 12px; }
     .ask-card { padding: 17px; border-radius: 14px; background: #fff; box-shadow: 0 2px 10px rgba(25,40,60,.06); }
+    .ask-card + .ask-card { margin-top: 12px; }
     .ask-card-label { color: #168de2; font-size: 12px; font-weight: 700; }
+    .ask-question-author {
+      display: block;
+      margin: 0 0 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #168de2;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
     .ask-question { margin: 13px 0 17px; font-size: 17px; font-weight: 700; line-height: 1.45; }
     .ask-answer { padding-top: 14px; border-top: 1px solid #edf0f4; }
     .ask-answer-label { margin-bottom: 7px; color: #7b8190; font-size: 12px; }
@@ -638,14 +651,40 @@
               <div class="ask-profile-caption">익명 질문함</div>
             </div>
           </div>
-          <article class="ask-card" aria-label="익명 질문과 답변">
-            <div class="ask-card-label">익명 질문</div>
-            <div class="ask-question">너 ㅇㅎㄱ 들음???</div>
-            <div class="ask-answer">
-              <div class="ask-answer-label">유설의 답변</div>
-              <div class="ask-answer-text">ㅇㅇ.. 에바더라</div>
-            </div>
-          </article>
+          <div class="ask-question-list">
+            <article class="ask-card" aria-label="익명 질문과 답변">
+              <div class="ask-card-label">익명 질문</div>
+              <div class="ask-question">너 ㅇㅎㄱ 들음???</div>
+              <div class="ask-answer">
+                <div class="ask-answer-label">유설의 답변</div>
+                <div class="ask-answer-text">ㅇㅇ봤음 왜그살</div>
+              </div>
+            </article>
+            <article class="ask-card" aria-label="신가람의 질문과 유설의 답변">
+              <button class="ask-question-author" type="button" onclick="navigate('view-profile', 'garam_s')">신가람</button>
+              <div class="ask-question">비호 1</div>
+              <div class="ask-answer">
+                <div class="ask-answer-label">유설의 답변</div>
+                <div class="ask-answer-text">ㅇㅎㄱ</div>
+              </div>
+            </article>
+            <article class="ask-card" aria-label="백루미의 질문과 유설의 답변">
+              <button class="ask-question-author" type="button" onclick="navigate('view-profile', 'rumi_b')">백루미</button>
+              <div class="ask-question">모를줄 알았나</div>
+              <div class="ask-answer">
+                <div class="ask-answer-label">유설의 답변</div>
+                <div class="ask-answer-text">ㄱㄴㄲㅋㅋ</div>
+              </div>
+            </article>
+            <article class="ask-card" aria-label="서설아의 질문과 유설의 답변">
+              <button class="ask-question-author" type="button" onclick="navigate('view-profile', 'seola_seo')">서설아</button>
+              <div class="ask-question">ㅎㄱ이 어캄ㅎㅋㅋ</div>
+              <div class="ask-answer">
+                <div class="ask-answer-label">유설의 답변</div>
+                <div class="ask-answer-text">ㅠㅜ</div>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
 
@@ -807,7 +846,7 @@
     viewer.setAttribute('aria-hidden', 'true');
   }
 
-  // 3. Database (38 Users)
+  // 3. Database (60 Profiles)
   const D_PFP = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg";
   const studentList = [
     { u: "050412_", n: "우하경" }, { u: "jiwon_choi", n: "최지원" }, { u: "seohyun_w", n: "우서현" },
@@ -822,8 +861,37 @@
     { u: "mina_an", n: "안민아" }, { u: "gayoon_an", n: "안가윤" }, { u: "bomi_kwon", n: "권보미" },
     { u: "yoobin_k", n: "강유빈" }, { u: "seul_y", n: "유설" }, { u: "garam_s", n: "신가람" },
     { u: "rumi_b", n: "백루미" }, { u: "seola_seo", n: "서설아" }, { u: "sihyeon_s", n: "성시현" },
-    { u: "haerin_d", n: "도해린" }, { u: "chanmi_b", n: "변찬미" }
+    { u: "haerin_d", n: "도해린" }, { u: "chanmi_b", n: "변찬미" },
+    { u: "daeun_kang", n: "강다은" }, { u: "eunchae_ko", n: "고은채" }, { u: "soyeon_kwon", n: "권소연" },
+    { u: "dahyun_kim", n: "김다현" }, { u: "yeeun_kim", n: "김예은" }, { u: "seoyoon_nam", n: "남서윤" },
+    { u: "jimin_ryu", n: "류지민" }, { u: "gayoung_moon", n: "문가영" }, { u: "somin_park", n: "박소민" },
+    { u: "jimin_bae", n: "배지민" }, { u: "yujeong_seo", n: "서유정" }, { u: "yerin_shin", n: "신예린" },
+    { u: "sua_an", n: "안수아" }, { u: "naeun_oh", n: "오나은" }, { u: "seojin_yoon", n: "윤서진" },
+    { u: "gahyun_lee", n: "이가현" }, { u: "daeun_lee", n: "이다은" }, { u: "mina_lee", n: "이민아" },
+    { u: "yoona_lim", n: "임유나" }, { u: "soyoung_jeon", n: "전소영" }, { u: "seohyun_jung", n: "정서현" },
+    { u: "daeun_choi", n: "최다은" }
   ];
+
+  const graphOnlyHandles = new Set([
+    "sihyeon_s", "haerin_d", "chanmi_b",
+    "daeun_kang", "eunchae_ko", "soyeon_kwon", "dahyun_kim", "yeeun_kim", "seoyoon_nam",
+    "jimin_ryu", "gayoung_moon", "somin_park", "jimin_bae", "yujeong_seo", "yerin_shin",
+    "sua_an", "naeun_oh", "seojin_yoon", "gahyun_lee", "daeun_lee", "mina_lee",
+    "yoona_lim", "soyoung_jeon", "seohyun_jung", "daeun_choi"
+  ]);
+  const evidenceStudentHandles = studentList
+    .map(student => student.u)
+    .filter(handle => handle !== "050412_" && !graphOnlyHandles.has(handle));
+
+  if (studentList.length !== 60 || graphOnlyHandles.size !== 25 || evidenceStudentHandles.length !== 34) {
+    throw new Error("Student roster counts do not match the configured groups.");
+  }
+  if (new Set(studentList.map(student => student.u)).size !== studentList.length) {
+    throw new Error("Student handles must be unique.");
+  }
+  if (new Set(studentList.map(student => student.n)).size !== studentList.length) {
+    throw new Error("Student names must be unique.");
+  }
 
   const db = {};
   studentList.forEach(s => db[s.u] = { u: s.u, n: s.n, pfp: D_PFP, followers: [], following: [] });
@@ -835,19 +903,24 @@
   hFwing.forEach(t => { db["050412_"].following.push(t); db[t].followers.push("050412_"); });
   hFwers.forEach(t => { db["050412_"].followers.push(t); db[t].following.push("050412_"); });
 
-  // Background random sync
-  studentList.forEach(s => {
-    if(s.u !== "050412_") {
-      let c = (s.u.length % 5) + 3;
-      studentList.forEach(o => {
-        if(o.u !== s.u && o.u !== "050412_") {
-          if(!db[s.u].following.includes(o.u) && db[s.u].following.length < c) {
-            db[s.u].following.push(o.u); db[o.u].followers.push(s.u);
-          }
-        }
-      });
+  // Add a deterministic relationship ring so each profile has at least 12 followers and following.
+  const networkHandles = studentList.map(student => student.u).filter(handle => handle !== "050412_");
+  networkHandles.forEach((handle, index) => {
+    for (let offset = 1; offset <= 12; offset++) {
+      const target = networkHandles[(index + offset) % networkHandles.length];
+      if (!db[handle].following.includes(target)) {
+        db[handle].following.push(target);
+        if (!db[target].followers.includes(handle)) db[target].followers.push(handle);
+      }
     }
   });
+
+  const underConnectedUsers = studentList.filter(({ u }) =>
+    db[u].following.length <= 10 || db[u].followers.length <= 10
+  );
+  if (underConnectedUsers.length) {
+    throw new Error(`Profiles must each have more than 10 followers and following: ${underConnectedUsers.map(({ u }) => u).join(", ")}`);
+  }
 
   // 4. Navigation & History Stack (파도타기)
   let historyStack = [];
