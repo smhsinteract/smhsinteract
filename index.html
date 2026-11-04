@@ -363,6 +363,36 @@
     .stat-label { font-size: 12px; color: #666; }
     .profile-bio { padding: 0 16px 16px 16px; font-size: 14px; }
     .bio-name { font-weight: 700; margin-bottom: 12px; }
+    .profile-ask-link {
+      display: block;
+      margin-top: 8px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #168de2;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ask-page { min-height: 100%; padding: 18px 14px; background: #f3f5f8; color: #252832; }
+    .ask-profile-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      background: #fff;
+    }
+    .ask-profile-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+    .ask-profile-name { font-size: 15px; font-weight: 700; }
+    .ask-profile-caption { margin-top: 4px; color: #7b8190; font-size: 12px; }
+    .ask-card { padding: 17px; border-radius: 14px; background: #fff; box-shadow: 0 2px 10px rgba(25,40,60,.06); }
+    .ask-card-label { color: #168de2; font-size: 12px; font-weight: 700; }
+    .ask-question { margin: 13px 0 17px; font-size: 17px; font-weight: 700; line-height: 1.45; }
+    .ask-answer { padding-top: 14px; border-top: 1px solid #edf0f4; }
+    .ask-answer-label { margin-bottom: 7px; color: #7b8190; font-size: 12px; }
+    .ask-answer-text { font-size: 15px; line-height: 1.5; }
     .profile-action-btn { width: 100%; padding: 7px; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
     .btn-blue { background: #0095f6; color: #fff; }
     .btn-gray { background: #efefef; color: #000; }
@@ -593,9 +623,30 @@
         </div>
         <div class="profile-bio">
           <div class="bio-name" id="prof-name">이름</div>
+          <div id="prof-ask-link"></div>
           <div id="prof-action-container"></div>
         </div>
         <div id="prof-grid-container"></div>
+      </div>
+
+      <div class="view-section" id="view-ask">
+        <div class="ask-page">
+          <div class="ask-profile-card">
+            <img class="ask-profile-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+            <div>
+              <div class="ask-profile-name">유설</div>
+              <div class="ask-profile-caption">익명 질문함</div>
+            </div>
+          </div>
+          <article class="ask-card" aria-label="익명 질문과 답변">
+            <div class="ask-card-label">익명 질문</div>
+            <div class="ask-question">너 ㅇㅎㄱ 들음???</div>
+            <div class="ask-answer">
+              <div class="ask-answer-label">유설의 답변</div>
+              <div class="ask-answer-text">ㅇㅇ.. 에바더라</div>
+            </div>
+          </article>
+        </div>
       </div>
 
       <!-- 3.3 List View (Followers / Following / DM Members) -->
@@ -872,6 +923,16 @@
   function renderProfile(username) {
     const user = db[username];
     document.getElementById('prof-name').innerText = user.n;
+    const askLinkContainer = document.getElementById('prof-ask-link');
+    askLinkContainer.innerHTML = '';
+    if (username === "seul_y") {
+      const askLink = document.createElement('button');
+      askLink.type = 'button';
+      askLink.className = 'profile-ask-link';
+      askLink.textContent = 'ask.comm';
+      askLink.addEventListener('click', () => navigate('view-ask', 'ask.comm'));
+      askLinkContainer.appendChild(askLink);
+    }
     document.getElementById('prof-followers').innerText = user.followers.length;
     document.getElementById('prof-following').innerText = user.following.length;
     const profileAvatar = document.getElementById('profile-avatar');
