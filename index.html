@@ -185,42 +185,7 @@
     }
     .key-btn:active { background: rgba(0, 0, 0, 0.15); }
 
-    /* 2. HOME SCREEN */
-    #home-screen {
-      padding: 80px 24px 40px 24px;
-    }
-    .app-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px 15px;
-    }
-    .app-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-    }
-    .app-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .app-name {
-      font-size: 11px;
-      color: #333;
-      font-weight: 600;
-    }
-    .icon-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); }
-    .icon-kt { background: #FEE500; }
-    .icon-msg { background: #34C759; }
-    .icon-gallery { background: #ffffff; }
-
-    /* 3. INSTAGRAM APP */
+    /* Instagram App */
     #insta-app {
       background-color: #fff;
     }
@@ -526,9 +491,9 @@
   </div>
 
   <!-- 2. HOME SCREEN -->
-  <div class="app-screen" id="home-screen">
+  <div class="app-screen" id="home-screen" hidden aria-hidden="true">
     <div class="app-grid">
-      <div class="app-item" onclick="openApp('insta')">
+      <div class="app-item">
         <div class="app-icon icon-ig">
           <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
         </div>
@@ -581,17 +546,17 @@
       <!-- 3.1 Feed View -->
       <div class="view-section" id="view-feed">
         <div class="story-tray" aria-label="스토리">
+          <div class="story-item" onclick="openYebinStory()">
+            <div class="story-ring">
+              <img class="story-avatar" src="yebin-story.jpeg" alt="류예빈 스토리">
+            </div>
+            <span class="story-label">류예빈</span>
+          </div>
           <div class="story-item" onclick="openChaeminStory()">
             <div class="story-ring">
               <img class="story-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="정채민 스토리">
             </div>
             <span class="story-label">정채민</span>
-          </div>
-          <div class="story-item" onclick="openYebinStory()">
-            <div class="story-ring">
-              <img class="story-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="류예빈 스토리">
-            </div>
-            <span class="story-label">류예빈</span>
           </div>
         </div>
         <div class="feed-post">
@@ -758,19 +723,12 @@
     if(passInput === "1388") {
       document.getElementById('passcode-modal').style.display = 'none';
       document.getElementById('lock-screen').classList.remove('active');
-      document.getElementById('home-screen').classList.add('active');
+      document.getElementById('insta-app').classList.add('active');
+      goHomeFeed();
     } else {
       document.getElementById('passcode-hint').style.color = '#ff3b30'; // 틀리면 빨간색
       passInput = ""; updateDots();
       setTimeout(() => document.getElementById('passcode-hint').style.color = '#555', 1500);
-    }
-  }
-
-  function openApp(app) {
-    if(app === 'insta') {
-      document.getElementById('home-screen').classList.remove('active');
-      document.getElementById('insta-app').classList.add('active');
-      goHomeFeed(); // 디폴트로 홈 피드 열기
     }
   }
 
