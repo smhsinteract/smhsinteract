@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">게시물 이미지 없음</title>
+  <desc id="desc">원본 image_2.png 파일이 첨부되지 않았습니다.</desc>
+  <rect width="720" height="480" fill="#f1f1f1"/>
+  <g fill="none" stroke="#a6a6a6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="307" y="142" width="106" height="84" rx="12"/>
+    <circle cx="360" cy="184" r="22"/>
+    <path d="M329 142l9-17h44l9 17"/>
+    <path d="M260 266h200"/>
+  </g>
+  <text x="360" y="318" text-anchor="middle" fill="#666" font-family="Arial, sans-serif" font-size="24">게시물 이미지가 첨부되지 않았습니다</text>
+  <text x="360" y="354" text-anchor="middle" fill="#999" font-family="Arial, sans-serif" font-size="17">image_2.png 파일을 추가하면 표시됩니다</text>
+</svg>

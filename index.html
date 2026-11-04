@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cyberbullying Prevention Interactive Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Phone Device Frame - 절대조건: 노란색 배경 */
+    .phone-container {
+      width: min(375px, 100vw);
+      height: min(750px, 100dvh);
+      background-color: #fdf5c9;
+      border-radius: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 12px #262626;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 400px) {
+      .phone-container {
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      background: transparent;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1000;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .app-screen {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      flex-direction: column;
+      background: #fdf5c9;
+    }
+
+    .app-screen.active {
+      display: flex;
+    }
+
+    /* 1. LOCK SCREEN */
+    #lock-screen {
+      color: #333;
+      justify-content: space-between;
+      align-items: center;
+      padding: 80px 20px 60px 20px;
+      cursor: pointer;
+      z-index: 900;
+    }
+
+    .clock-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .lock-date {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .lock-time {
+      font-size: 68px;
+      font-weight: 200;
+      letter-spacing: -2px;
+    }
+
+    .unlock-prompt {
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.8;
+      animation: pulse 2s infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* Passcode Modal */
+    .passcode-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(253, 245, 201, 0.95);
+      backdrop-filter: blur(15px);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 950;
+      padding: 20px;
+      color: #333;
+    }
+
+    .passcode-title {
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .passcode-hint {
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+      max-width: 280px;
+      margin-bottom: 25px;
+      line-height: 1.4;
+      word-break: keep-all;
+      transition: color 0.3s;
+    }
+
+    .passcode-dots {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 35px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #333;
+      transition: background-color 0.2s;
+    }
+    .dot.filled {
+      background-color: #333;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px 25px;
+    }
+
+    .key-btn {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .key-btn:active { background: rgba(0, 0, 0, 0.15); }
+
+    /* 2. HOME SCREEN */
+    #home-screen {
+      padding: 80px 24px 40px 24px;
+    }
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px 15px;
+    }
+    .app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .app-name {
+      font-size: 11px;
+      color: #333;
+      font-weight: 600;
+    }
+    .icon-ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); }
+    .icon-kt { background: #FEE500; }
+    .icon-msg { background: #34C759; }
+    .icon-gallery { background: #ffffff; }
+
+    /* 3. INSTAGRAM APP */
+    #insta-app {
+      background-color: #fff;
+    }
+    .insta-header {
+      height: 50px;
+      margin-top: 35px;
+      border-bottom: 1px solid #dbdbdb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: #fff;
+      position: relative;
+    }
+    .header-left {
+      width: 40px;
+      display: flex;
+      align-items: center;
+    }
+    .back-btn {
+      font-size: 24px;
+      cursor: pointer;
+      display: none;
+    }
+    .insta-title {
+      font-weight: 700;
+      font-size: 16px;
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    .header-right {
+      width: 40px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .insta-dm-btn {
+      cursor: pointer;
+      position: relative;
+    }
+    .dm-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #ed4956;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 2px 5px;
+    }
+
+    .insta-content {
+      flex: 1;
+      overflow-y: auto;
+      background: #fff;
+      position: relative;
+    }
+
+    /* Views */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+    .view-section.flex-active { display: flex; flex-direction: column; height: 100%; }
+
+    /* Feed View */
+    .feed-post { margin-bottom: 20px; }
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+    }
+    .post-avatar {
+      width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 10px; cursor: pointer;
+    }
+    .post-author { font-size: 14px; font-weight: 600; cursor: pointer; }
+    .post-img { width: 100%; height: auto; max-height: 400px; object-fit: cover; background: #eee; }
+    .post-actions { padding: 10px 12px 5px 12px; }
+    .post-likes { font-size: 13px; font-weight: 600; padding: 0 12px; margin-bottom: 5px; }
+    .post-caption { font-size: 14px; padding: 0 12px; margin-bottom: 5px; }
+    .post-comments { font-size: 13px; padding: 0 12px; line-height: 1.4; }
+    .comment-row { margin-bottom: 4px; }
+    .reply-row { margin-left: 20px; color: #555; }
+    .comment-author { font-weight: 600; margin-right: 5px; cursor: pointer; }
+
+    /* Profile View */
+    .profile-header-sec { padding: 16px; display: flex; align-items: center; }
+    .profile-img-lg { width: 77px; height: 77px; border-radius: 50%; object-fit: cover; margin-right: 28px; }
+    .profile-stats { display: flex; flex: 1; justify-content: space-around; text-align: center; }
+    .stat-num { font-weight: 700; font-size: 16px; }
+    .stat-label { font-size: 12px; color: #666; }
+    .profile-bio { padding: 0 16px 16px 16px; font-size: 14px; }
+    .bio-name { font-weight: 700; margin-bottom: 12px; }
+    .profile-action-btn { width: 100%; padding: 7px; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+    .btn-blue { background: #0095f6; color: #fff; }
+    .btn-gray { background: #efefef; color: #000; }
+    .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; border-top: 1px solid #efefef; margin-top: 10px; }
+    .grid-item { width: 100%; aspect-ratio: 1; object-fit: cover; background: #eee; cursor: pointer; }
+    .empty-feed { border-top: 1px solid #efefef; padding: 60px 20px; text-align: center; color: #8e8e8e; font-size: 14px; margin-top: 10px; }
+
+    /* Lists */
+    .user-list-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; }
+    .user-info { display: flex; align-items: center; cursor: pointer; }
+    .list-avatar { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; object-fit: cover; }
+    .user-names { display: flex; flex-direction: column; }
+    .user-username { font-size: 14px; font-weight: 600; }
+    .user-fullname { font-size: 13px; color: #8e8e8e; }
+    .list-follow-btn { padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+
+    /* DM Inbox */
+    .dm-inbox-item { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #fafafa; }
+    .group-avatar-stack { width: 50px; height: 50px; position: relative; margin-right: 14px; }
+    .avatar-sub { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; position: absolute; object-fit: cover; }
+    .avatar-sub:nth-child(1) { top: 0; left: 0; z-index: 2; }
+    .avatar-sub:nth-child(2) { bottom: 0; right: 0; z-index: 1; }
+    .dm-info { flex: 1; }
+    .dm-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .dm-last-msg { font-size: 13px; color: #8e8e8e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; font-weight: 400; }
+    .dm-unread { font-weight: 700; color: #222; }
+
+    /* DM Chat */
+    .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+    .msg-group { display: flex; margin-bottom: 6px; }
+    .msg-avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 8px; margin-top: 2px; cursor: pointer; }
+    .msg-content { display: flex; flex-direction: column; }
+    .msg-sender { font-size: 11px; color: #8e8e8e; margin-bottom: 3px; margin-left: 2px; }
+    .msg-bubble { background: #efefef; color: #000; padding: 9px 13px; border-radius: 18px; font-size: 14px; max-width: 230px; word-break: break-word; line-height: 1.35; }
+
+    /* Notification Banner */
+    .notification-banner {
+      position: absolute;
+      top: -80px;
+      left: 10px;
+      right: 10px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      z-index: 2000;
+      transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+    .notification-banner.show { top: 10px; }
+    .noti-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; }
+    .noti-content { flex: 1; }
+    .noti-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .noti-desc { font-size: 13px; color: #555; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      height: 50px;
+      border-top: 1px solid #dbdbdb;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #fff;
+    }
+    .nav-btn { cursor: pointer; display: flex; justify-content: center; align-items: center; }
+    .nav-pfp { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #dbdbdb; object-fit: cover; }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background-color: #000;
+      border-radius: 3px;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone-container">
+  <!-- Status Bar -->
+  <div class="status-bar" id="status-bar">
+    <span id="current-time-small">12:00</span>
+    <span>LTE 100%</span>
+  </div>
+
+  <!-- 1. LOCK SCREEN -->
+  <div class="app-screen active" id="lock-screen" onclick="openPasscodeModal()">
+    <div class="clock-container">
+      <div class="lock-date" id="lock-date">11월 4일 수요일</div>
+      <div class="lock-time" id="lock-time">12:00</div>
+    </div>
+    <div class="unlock-prompt">클릭해서 잠금해제</div>
+  </div>
+
+  <!-- Passcode Modal -->
+  <div class="passcode-modal" id="passcode-modal">
+    <div class="passcode-title">비밀번호 입력</div>
+    <div class="passcode-hint" id="passcode-hint">청소년이 사이버 폭력 등으로 상담이 필요할 때 상담을 신청할 수 있는 기관은?</div>
+    <div class="passcode-dots">
+      <div class="dot" id="dot-0"></div>
+      <div class="dot" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+    <div class="keypad">
+      <div class="key-btn" onclick="pressKey('1')">1</div>
+      <div class="key-btn" onclick="pressKey('2')">2</div>
+      <div class="key-btn" onclick="pressKey('3')">3</div>
+      <div class="key-btn" onclick="pressKey('4')">4</div>
+      <div class="key-btn" onclick="pressKey('5')">5</div>
+      <div class="key-btn" onclick="pressKey('6')">6</div>
+      <div class="key-btn" onclick="pressKey('7')">7</div>
+      <div class="key-btn" onclick="pressKey('8')">8</div>
+      <div class="key-btn" onclick="pressKey('9')">9</div>
+      <div></div>
+      <div class="key-btn" onclick="pressKey('0')">0</div>
+      <div class="key-btn" onclick="deleteKey()">←</div>
+    </div>
+  </div>
+
+  <!-- 2. HOME SCREEN -->
+  <div class="app-screen" id="home-screen">
+    <div class="app-grid">
+      <div class="app-item" onclick="openApp('insta')">
+        <div class="app-icon icon-ig">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </div>
+        <span class="app-name">Instagram</span>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-kt"><svg width="32" height="32" viewBox="0 0 24 24" fill="#3c1e1e"><path d="M12 3C6.477 3 2 6.477 2 10.767c0 2.766 1.84 5.19 4.606 6.573-.203.746-.738 2.707-.847 3.129-.136.528.193.521.407.38 1.688-1.118 3.921-2.617 4.708-3.149.369.043.747.067 1.126.067 5.523 0 10-3.477 10-7.767C22 6.477 17.523 3 12 3z"/></svg></div>
+        <span class="app-name">카카오톡</span>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-msg"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+        <span class="app-name">메시지</span>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-gallery"><svg width="34" height="34" viewBox="0 0 24 24"><path fill="#FF3B30" d="M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"/><path fill="#FF9500" d="M12 4a8 8 0 0 1 8 8h-8V4z"/><path fill="#4CD964" d="M12 12v8a8 8 0 0 1-8-8h8z"/><path fill="#5AC8FA" d="M4 12a8 8 0 0 1 8-8v8H4z"/><path fill="#007AFF" d="M12 12h8a8 8 0 0 1-8 8v-8z"/></svg></div>
+        <span class="app-name">갤러리</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. INSTAGRAM APP -->
+  <div class="app-screen" id="insta-app">
+    
+    <!-- Instagram Header -->
+    <div class="insta-header">
+      <div class="header-left">
+        <span class="back-btn" id="ig-back-btn" onclick="goBack()">‹</span>
+      </div>
+      <span class="insta-title" id="ig-title">Instagram</span>
+      <div class="header-right" id="ig-right-action">
+        <div class="insta-dm-btn" onclick="navigate('view-dm-inbox', '메시지')">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          <span class="dm-badge" id="dm-badge">1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropdown Notification (Gaeun Trigger) -->
+    <div class="notification-banner" id="noti-banner" onclick="handleNotiClick()">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" class="noti-avatar">
+      <div class="noti-content">
+        <div class="noti-title">gaeun_l</div>
+        <div class="noti-desc">?</div>
+      </div>
+    </div>
+
+    <!-- App Content Wrapper -->
+    <div class="insta-content" id="ig-content">
+      
+      <!-- 3.1 Feed View -->
+      <div class="view-section" id="view-feed">
+        <div class="feed-post">
+          <div class="post-header">
+            <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'jiwon_choi')">
+            <span class="post-author" onclick="navigate('view-profile', 'jiwon_choi')">jiwon_choi</span>
+          </div>
+          <!-- 이미지 파일명 반영 -->
+          <img class="post-img" src="image_2.jpeg" alt="최지원의 게시물 사진" onerror="this.onerror=null;this.src='image-placeholder.svg'">
+          <div class="post-actions">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="margin-right:12px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="post-likes">좋아요 42개</div>
+          <div class="post-caption"><span class="comment-author" onclick="navigate('view-profile', 'jiwon_choi')">jiwon_choi</span> 하트</div>
+          <div class="post-comments">
+            <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'soyool_k')">soyool_k</span> 짤린거 ㄴㄱ?</div>
+            <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'jiwon_choi')">jiwon_choi</span> 누구겠니</div>
+            <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'soyool_k')">soyool_k</span> ㅋㅋㅋㅋㅋ</div>
+            <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'minseo_k')">minseo_k</span> ㅋㅋㅋㅋㅋㅋㅋㅇㅎㄱ~~</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 Profile View -->
+      <div class="view-section" id="view-profile">
+        <div class="profile-header-sec">
+          <img class="profile-img-lg" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          <div class="profile-stats">
+            <div><div class="stat-num" id="prof-posts">0</div><div class="stat-label">게시물</div></div>
+            <div style="cursor:pointer;" onclick="navigate('view-list', '팔로워', { type:'followers' })"><div class="stat-num" id="prof-followers">0</div><div class="stat-label">팔로워</div></div>
+            <div style="cursor:pointer;" onclick="navigate('view-list', '팔로잉', { type:'following' })"><div class="stat-num" id="prof-following">0</div><div class="stat-label">팔로잉</div></div>
+          </div>
+        </div>
+        <div class="profile-bio">
+          <div class="bio-name" id="prof-name">이름</div>
+          <div id="prof-action-container"></div>
+        </div>
+        <div id="prof-grid-container"></div>
+      </div>
+
+      <!-- 3.3 List View (Followers / Following / DM Members) -->
+      <div class="view-section" id="view-list">
+        <div id="list-container"></div>
+      </div>
+
+      <!-- 3.4 DM Inbox View -->
+      <div class="view-section" id="view-dm-inbox">
+        <div class="dm-inbox-item" onclick="navigate('view-dm-chat', '우서현 외 7명 >', { chatId: 'group' })">
+          <div class="group-avatar-stack">
+            <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+            <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          </div>
+          <div class="dm-info">
+            <div class="dm-name">우서현, 조서윤, 구지민 외 5명</div>
+            <div class="dm-last-msg">구지민: ㅋㅋㅋㅋㅋㄱㅋㄱㄱ · 방금 전</div>
+          </div>
+        </div>
+        <!-- Gaeun DM Container (Hidden initially) -->
+        <div id="gaeun-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' })">
+          <img class="list-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          <div class="dm-info">
+            <div class="dm-name">gaeun_l</div>
+            <div class="dm-last-msg dm-unread">뭐해ㅋㅋ · 방금 전</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.5 DM Chat View -->
+      <div class="view-section" id="view-dm-chat" style="height:100%;">
+        <div class="chat-messages" id="chat-box"></div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <div class="nav-btn" onclick="goHomeFeed()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg></div>
+      <div class="nav-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="nav-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg></div>
+      <div class="nav-btn" onclick="navigate('view-profile', '050412_')"><img class="nav-pfp" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"></div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  // 1. Realtime Date Logic
+  function updateClock() {
+    const now = new Date();
+    const hrs = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('lock-time').innerText = `${hrs}:${mins}`;
+    document.getElementById('current-time-small').innerText = `${hrs}:${mins}`;
+    const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    document.getElementById('lock-date').innerText = `${now.getMonth() + 1}월 ${now.getDate()}일 ${days[now.getDay()]}`;
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  // 2. Passcode Logic (No Alerts)
+  let passInput = "";
+  function openPasscodeModal() { document.getElementById('passcode-modal').style.display = 'flex'; }
+  function pressKey(n) {
+    if(passInput.length < 4) {
+      passInput += n; updateDots();
+      if(passInput.length === 4) setTimeout(checkPass, 150);
+    }
+  }
+  function deleteKey() { if(passInput.length > 0) { passInput = passInput.slice(0, -1); updateDots(); } }
+  function updateDots() {
+    for(let i=0; i<4; i++) {
+      document.getElementById(`dot-${i}`).classList.toggle('filled', i < passInput.length);
+    }
+  }
+  function checkPass() {
+    if(passInput === "1388") {
+      document.getElementById('passcode-modal').style.display = 'none';
+      document.getElementById('lock-screen').classList.remove('active');
+      document.getElementById('home-screen').classList.add('active');
+    } else {
+      document.getElementById('passcode-hint').style.color = '#ff3b30'; // 틀리면 빨간색
+      passInput = ""; updateDots();
+      setTimeout(() => document.getElementById('passcode-hint').style.color = '#555', 1500);
+    }
+  }
+
+  function openApp(app) {
+    if(app === 'insta') {
+      document.getElementById('home-screen').classList.remove('active');
+      document.getElementById('insta-app').classList.add('active');
+      goHomeFeed(); // 디폴트로 홈 피드 열기
+    }
+  }
+
+  // 3. Database (38 Users)
+  const D_PFP = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg";
+  const studentList = [
+    { u: "050412_", n: "우하경" }, { u: "jiwon_choi", n: "최지원" }, { u: "seohyun_w", n: "우서현" },
+    { u: "minseo_k", n: "김민서" }, { u: "gaeun_l", n: "이가은" }, { u: "chaemin_j", n: "정채민" },
+    { u: "chohee_g", n: "공초희" }, { u: "yebin_r", n: "류예빈" }, { u: "jiwoo_lee", n: "이지우" },
+    { u: "seoyoon_j", n: "조서윤" }, { u: "jimin_koo", n: "구지민" }, { u: "soomin_oh", n: "오수민" },
+    { u: "jiyoon_n", n: "남지윤" }, { u: "hyunseo_kwon", n: "권현서" }, { u: "soyool_k", n: "김소율" },
+    { u: "yeonwoo_l", n: "이연우" }, { u: "yejin_l", n: "이예진" }, { u: "yoona_k", n: "김유나" },
+    { u: "dain_lee", n: "이다인" }, { u: "seowoo_l", n: "이서우" }, { u: "haena_p", n: "박해나" },
+    { u: "jaein_p", n: "박재인" }, { u: "sooyeon_c", n: "최수연" }, { u: "seoeun_c", n: "최서은" },
+    { u: "seoin_h", n: "황서인" }, { u: "heeyoon_j", n: "정희윤" }, { u: "chaeyoon_l", n: "이채윤" },
+    { u: "mina_an", n: "안민아" }, { u: "gayoon_an", n: "안가윤" }, { u: "bomi_kwon", n: "권보미" },
+    { u: "yoobin_k", n: "강유빈" }, { u: "seul_y", n: "유설" }, { u: "garam_s", n: "신가람" },
+    { u: "rumi_b", n: "백루미" }, { u: "seola_seo", n: "서설아" }, { u: "sihyeon_s", n: "성시현" },
+    { u: "haerin_d", n: "도해린" }, { u: "chanmi_b", n: "변찬미" }
+  ];
+
+  const db = {};
+  studentList.forEach(s => db[s.u] = { u: s.u, n: s.n, pfp: D_PFP, followers: [], following: [] });
+
+  // Initial Hakyeong Relations (gaeun_l is NOT followed)
+  const hFwing = ["jiwon_choi","seohyun_w","chaemin_j","jiwoo_lee","seoyoon_j","jimin_koo","soomin_oh","jiyoon_n","hyunseo_kwon","soyool_k","yeonwoo_l","yejin_l","yoona_k"];
+  const hFwers = ["jiwon_choi","seohyun_w","minseo_k","gaeun_l","chaemin_j","chohee_g","yebin_r","jiwoo_lee","seoyoon_j","jimin_koo","soomin_oh","jiyoon_n","hyunseo_kwon","dain_lee","seowoo_l","haena_p","jaein_p","sooyeon_c","seoeun_c","seoin_h","heeyoon_j","chaeyoon_l","mina_an"];
+  
+  hFwing.forEach(t => { db["050412_"].following.push(t); db[t].followers.push("050412_"); });
+  hFwers.forEach(t => { db["050412_"].followers.push(t); db[t].following.push("050412_"); });
+
+  // Background random sync
+  studentList.forEach(s => {
+    if(s.u !== "050412_") {
+      let c = (s.u.length % 5) + 3;
+      studentList.forEach(o => {
+        if(o.u !== s.u && o.u !== "050412_") {
+          if(!db[s.u].following.includes(o.u) && db[s.u].following.length < c) {
+            db[s.u].following.push(o.u); db[o.u].followers.push(s.u);
+          }
+        }
+      });
+    }
+  });
+
+  // 4. Navigation & History Stack (파도타기)
+  let historyStack = [];
+  let currentState = null; 
+  let gaeunTriggered = false;
+
+  function goHomeFeed() {
+    historyStack = []; // Reset stack
+    navigate('view-feed', 'Instagram', null);
+  }
+
+  function goBack() {
+    if(historyStack.length > 0) {
+      const prev = historyStack.pop();
+      renderState(prev, true);
+    }
+  }
+
+  function navigate(viewId, title, context = null) {
+    if(currentState) historyStack.push(currentState);
+    renderState({ viewId, title, context }, false);
+  }
+
+  function renderState(state, isBack) {
+    currentState = state;
+    
+    // Hide all views
+    document.querySelectorAll('.view-section').forEach(el => {
+      el.classList.remove('active', 'flex-active');
+    });
+
+    // Update Header
+    document.getElementById('ig-title').innerText = state.title;
+    document.getElementById('ig-back-btn').style.display = (historyStack.length > 0) ? 'block' : 'none';
+    
+    const isMain = state.viewId === 'view-feed' || (state.viewId === 'view-profile' && state.title === '050412_');
+    document.getElementById('ig-right-action').innerHTML = isMain ? `
+      <div class="insta-dm-btn" onclick="navigate('view-dm-inbox', '메시지')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <span class="dm-badge">${gaeunTriggered ? '2' : '1'}</span>
+      </div>` : '';
+
+    // Title clickable for DM members
+    const titleEl = document.getElementById('ig-title');
+    if (state.viewId === 'view-dm-chat' && state.context.chatId === 'group') {
+      titleEl.onclick = () => navigate('view-list', '참여 인원', { type: 'dm-members' });
+    } else {
+      titleEl.onclick = null;
+    }
+
+    // Render logic per view
+    const viewEl = document.getElementById(state.viewId);
+    if(state.viewId === 'view-dm-chat') viewEl.classList.add('flex-active');
+    else viewEl.classList.add('active');
+
+    if (state.viewId === 'view-profile') renderProfile(state.title);
+    else if (state.viewId === 'view-list') renderList(state.context.type, historyStack[historyStack.length-1].title);
+    else if (state.viewId === 'view-dm-chat') renderChat(state.context.chatId);
+    
+    // Scroll to top
+    document.getElementById('ig-content').scrollTop = 0;
+  }
+
+  // View Renderers
+  function renderProfile(username) {
+    const user = db[username];
+    document.getElementById('prof-name').innerText = user.n;
+    document.getElementById('prof-followers').innerText = user.followers.length;
+    document.getElementById('prof-following').innerText = user.following.length;
+    
+    const actBtn = document.getElementById('prof-action-container');
+    if(username === "050412_") {
+      actBtn.innerHTML = `<button class="profile-action-btn btn-gray">프로필 편집</button>`;
+    } else {
+      const isF = db["050412_"].following.includes(username);
+      actBtn.innerHTML = `<button class="profile-action-btn ${isF ? 'btn-gray' : 'btn-blue'}" onclick="toggleFollowBtn('${username}')">${isF ? '팔로잉' : '팔로우'}</button>`;
+    }
+
+    const grid = document.getElementById('prof-grid-container');
+    if(username === "jiwon_choi") {
+      document.getElementById('prof-posts').innerText = "1";
+      grid.innerHTML = `<div class="profile-grid"><img class="grid-item" src="image_2.jpeg" alt="최지원의 게시물 사진" onerror="this.onerror=null;this.src='image-placeholder.svg'" onclick="goHomeFeed()"></div>`;
+    } else {
+      document.getElementById('prof-posts').innerText = "0";
+      grid.innerHTML = `<div class="empty-feed">아직 올라온 게시물이 없습니다</div>`;
+    }
+  }
+
+  function renderList(type, targetUser) {
+    const cont = document.getElementById('list-container');
+    cont.innerHTML = '';
+    let arr = [];
+
+    if(type === 'dm-members') {
+      arr = ["seohyun_w", "seoyoon_j", "jimin_koo", "jiwoo_lee", "soomin_oh", "jiyoon_n", "hyunseo_kwon", "050412_"];
+    } else {
+      arr = type === 'followers' ? [...db[targetUser].followers] : [...db[targetUser].following];
+      if(arr.includes("050412_")) { arr = arr.filter(x => x !== "050412_"); arr.unshift("050412_"); }
+    }
+
+    arr.forEach(handle => {
+      const u = db[handle];
+      const isMe = handle === "050412_";
+      const isF = db["050412_"].following.includes(handle);
+      
+      let btnHtml = '';
+      if(!isMe) {
+        const isGray = (targetUser === "050412_" && type === 'following') ? true : isF;
+        btnHtml = `<button class="list-follow-btn ${isGray ? 'btn-gray' : 'btn-blue'}" onclick="event.stopPropagation(); toggleFollowBtn('${handle}')">${isGray ? '팔로잉' : '팔로우'}</button>`;
+      }
+      cont.innerHTML += `
+        <div class="user-list-item" onclick="navigate('view-profile', '${handle}')">
+          <div class="user-info">
+            <img class="list-avatar" src="${u.pfp}">
+            <div class="user-names"><span class="user-username">${u.u}</span><span class="user-fullname">${u.n}</span></div>
+          </div>
+          ${btnHtml}
+        </div>`;
+    });
+  }
+
+  // 5. Follow & Ga-eun Trigger Logic
+  function toggleFollowBtn(target) {
+    const ha = db["050412_"];
+    const t = db[target];
+    const idx = ha.following.indexOf(target);
+    
+    if(idx > -1) {
+      ha.following.splice(idx, 1);
+      const fIdx = t.followers.indexOf("050412_");
+      if(fIdx > -1) t.followers.splice(fIdx, 1);
+    } else {
+      ha.following.push(target);
+      if(!t.followers.includes("050412_")) t.followers.push("050412_");
+      
+      // Trigger: Gaeun Realtime DM
+      if(target === "gaeun_l" && !gaeunTriggered) {
+        gaeunTriggered = true;
+        setTimeout(() => {
+          document.getElementById('noti-banner').classList.add('show');
+          document.getElementById('gaeun-dm-item').style.display = 'flex';
+          const badge = document.getElementById('dm-badge');
+          if(badge) badge.innerText = '2';
+          setTimeout(() => document.getElementById('noti-banner').classList.remove('show'), 4000);
+        }, 500);
+      }
+    }
+    // Re-render current view to update buttons
+    renderState(currentState, false);
+  }
+
+  function handleNotiClick() {
+    document.getElementById('noti-banner').classList.remove('show');
+    navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' });
+  }
+
+  // 6. DM Chat Render
+  const msgs = {
+    group: [
+      { s: "seohyun_w", t: "야" }, { s: "seohyun_w", t: "야" }, { s: "seohyun_w", t: "야야" },
+      { s: "seohyun_w", t: "읽어" }, { s: "seohyun_w", t: "읽어" }, { s: "seohyun_w", t: "읽으라고" },
+      { s: "seohyun_w", t: "현활인거 다 보여" }, { s: "seohyun_w", t: "하경아~~" }, { s: "seohyun_w", t: "야" },
+      { s: "seohyun_w", t: "읽으라고" }, { s: "seoyoon_j", t: "ㅋㅋㅋㅋㅋㅋ" }, { s: "jimin_koo", t: "ㅋㅋㅋㅋㅋㄱㅋㄱㄱ" }
+    ],
+    gaeun: [
+      { s: "gaeun_l", t: "?" }, { s: "gaeun_l", t: "뭐해ㅋㅋ" }
+    ]
+  };
+
+  function renderChat(chatId) {
+    const box = document.getElementById('chat-box');
+    box.innerHTML = '';
+    let prev = "";
+    msgs[chatId].forEach(m => {
+      const u = db[m.s];
+      const header = m.s !== prev;
+      if(header) {
+        box.innerHTML += `
+          <div class="msg-group">
+            <img class="msg-avatar" src="${u.pfp}" onclick="navigate('view-profile', '${u.u}')">
+            <div class="msg-content">
+              <div class="msg-sender">${u.n} (@${u.u})</div>
+              <div class="msg-bubble">${m.t}</div>
+            </div>
+          </div>`;
+      } else {
+        box.innerHTML += `<div class="msg-group"><div style="width:36px;"></div><div class="msg-content"><div class="msg-bubble">${m.t}</div></div></div>`;
+      }
+      prev = m.s;
+    });
+    box.scrollTop = box.scrollHeight;
+  }
+</script>
+</body>
+</html>
