@@ -289,6 +289,7 @@
       gap: 6px;
       cursor: pointer;
     }
+    .story-item[hidden] { display: none; }
     .story-ring {
       width: 62px;
       height: 62px;
@@ -329,6 +330,7 @@
     .story-header-avatar { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; object-fit: cover; }
     .story-header-name { flex: 1; font-size: 13px; font-weight: 700; }
     .story-header-time { margin-left: 5px; font-weight: 400; opacity: .75; }
+    .close-friend-badge { position: absolute; top: 52px; right: 12px; z-index: 2; padding: 5px 9px; border-radius: 12px; background: rgba(76, 181, 72, .92); color: #fff; font-size: 11px; font-weight: 700; }
     .story-close {
       width: 36px;
       height: 36px;
@@ -440,7 +442,18 @@
     .msg-content { display: flex; flex-direction: column; }
     .msg-sender { font-size: 11px; color: #8e8e8e; margin-bottom: 3px; margin-left: 2px; }
     .msg-bubble { background: #efefef; color: #000; padding: 9px 13px; border-radius: 18px; font-size: 14px; max-width: 230px; word-break: break-word; line-height: 1.35; }
+    .msg-group.mine { justify-content: flex-end; }
+    .msg-group.mine .msg-content { align-items: flex-end; }
+    .msg-group.mine .msg-bubble { background: #0064e0; color: #fff; }
     .msg-image { display: block; width: 100%; max-width: 230px; max-height: 360px; object-fit: contain; border-radius: 14px; }
+    .chat-composer { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid #efefef; background: #fff; }
+    .chat-input { flex: 1; min-width: 0; height: 38px; border: 1px solid #dbdbdb; border-radius: 19px; padding: 0 14px; outline: none; font-size: 14px; user-select: text; }
+    .chat-send { flex: 0 0 38px; height: 38px; border: 0; border-radius: 50%; background: #0095f6; color: #fff; font-size: 18px; cursor: pointer; }
+    .system-message { align-self: center; max-width: 260px; margin: 4px auto 8px; color: #8e8e8e; font-size: 12px; text-align: center; line-height: 1.35; }
+    .story-nav-zone { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 3; }
+    .story-nav-prev { left: 0; }
+    .story-nav-next { right: 0; }
+    .read-receipt { align-self: flex-end; margin: -2px 4px 8px; color: #8e8e8e; font-size: 11px; }
 
     /* Notification Banner */
     .notification-banner {
@@ -589,7 +602,7 @@
       <!-- 3.1 Feed View -->
       <div class="view-section" id="view-feed">
         <div class="story-tray" aria-label="스토리">
-          <div class="story-item" onclick="openYebinStory()">
+          <div class="story-item" id="yebin-story-item" onclick="openYebinStory()" hidden>
             <div class="story-ring">
               <img class="story-avatar" src="yebin-story.jpeg" alt="류예빈 스토리">
             </div>
@@ -601,8 +614,12 @@
             </div>
             <span class="story-label">정채민</span>
           </div>
+          <div class="story-item" id="soomin-story-1" onclick="openSoominStory1()" hidden>
+            <div class="story-ring"><img class="story-avatar" src="C848294B-77DC-47A1-8081-E1D578F1D4F6.jpeg" alt="오수민 스토리"></div>
+            <span class="story-label">오수민</span>
+          </div>
         </div>
-        <div class="feed-post">
+        <div class="feed-post" id="jiwon-feed-post">
           <div class="post-header">
             <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'jiwon_choi')">
             <span class="post-author" onclick="navigate('view-profile', 'jiwon_choi')">jiwon_choi</span>
@@ -621,6 +638,52 @@
             <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'soyool_k')">soyool_k</span> ㅋㅋㅋㅋㅋ</div>
             <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'minseo_k')">minseo_k</span> ㅋㅋㅋㅋㅋㅋㅋㅇㅎㄱ~~</div>
           </div>
+        </div>
+
+        <div class="feed-post">
+          <div class="post-header">
+            <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'sihyeon_s')">
+            <span class="post-author" onclick="navigate('view-profile', 'sihyeon_s')">sihyeon_s</span>
+          </div>
+          <img class="post-img" src="4BD9EFE1-1972-4CF7-97EF-11CD5A91EDC3.jpeg" alt="성시현의 게시물 사진">
+          <div class="post-actions">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="margin-right:12px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="post-likes">좋아요 21개</div>
+          <div class="post-caption"><span class="comment-author" onclick="navigate('view-profile', 'sihyeon_s')">sihyeon_s</span> 시험기간~</div>
+        </div>
+
+        <div class="feed-post">
+          <div class="post-header">
+            <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'haerin_d')">
+            <span class="post-author" onclick="navigate('view-profile', 'haerin_d')">haerin_d</span>
+          </div>
+          <img class="post-img" src="IMG_2132.jpeg" alt="도해린의 게시물 사진">
+          <div class="post-actions">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="margin-right:12px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="post-likes">좋아요 13개</div>
+          <div class="post-caption"><span class="comment-author" onclick="navigate('view-profile', 'haerin_d')">haerin_d</span> 어디가게?</div>
+          <div class="post-comments">
+            <div class="comment-row" id="seoin-evidence-comment" hidden><span class="comment-author" onclick="navigate('view-profile', 'seoin_h')">황서인</span> 일본!!</div>
+            <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'haerin_d')">haerin_d</span> 오 마즘ㅁ</div>
+          </div>
+        </div>
+
+        <div class="feed-post">
+          <div class="post-header">
+            <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'chanmi_b')">
+            <span class="post-author" onclick="navigate('view-profile', 'chanmi_b')">chanmi_b</span>
+          </div>
+          <img class="post-img" src="ccdr 2026-10-23 1726524EE1B88905F1.jpeg" alt="변찬미의 게시물 사진">
+          <div class="post-actions">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="margin-right:12px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="post-likes">좋아요 11개</div>
+          <div class="post-caption"><span class="comment-author" onclick="navigate('view-profile', 'chanmi_b')">chanmi_b</span> #2026</div>
         </div>
       </div>
 
@@ -695,22 +758,29 @@
 
       <!-- 3.4 DM Inbox View -->
       <div class="view-section" id="view-dm-inbox">
-        <div class="dm-inbox-item" onclick="navigate('view-dm-chat', '우서현 외 7명 >', { chatId: 'group' })">
+        <div class="dm-inbox-item" onclick="navigate('view-dm-chat', getMainGroupTitle(), { chatId: 'group' })">
           <div class="group-avatar-stack">
             <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
             <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
           </div>
           <div class="dm-info">
-            <div class="dm-name">우서현, 조서윤, 구지민 외 5명</div>
-            <div class="dm-last-msg">구지민: ㅋㅋㅋㅋㅋㄱㅋㄱㄱ · 방금 전</div>
+            <div class="dm-name" id="main-group-dm-name">우서현, 조서윤, 구지민 외 1명</div>
+            <div class="dm-last-msg" id="main-group-last-msg">구지민: ㅋㅋㅋㅋㅋㄱㅋㄱㄱ · 방금 전</div>
           </div>
         </div>
         <!-- Gaeun DM Container (Hidden initially) -->
+        <div id="jiwoo-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', 'jiwoo_lee', { chatId: 'jiwoo' })">
+          <img class="list-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
+          <div class="dm-info">
+            <div class="dm-name">jiwoo_lee</div>
+            <div class="dm-last-msg dm-unread">기분 더러워 · 방금 전</div>
+          </div>
+        </div>
         <div id="gaeun-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' })">
           <img class="list-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg">
           <div class="dm-info">
             <div class="dm-name">gaeun_l</div>
-            <div class="dm-last-msg dm-unread">뭐해ㅋㅋ · 방금 전</div>
+            <div class="dm-last-msg dm-unread">ㅋㅋㅋㅋㅋㅋ당당하네 · 방금 전</div>
           </div>
         </div>
         <div id="chohee-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', 'chohee_g', { chatId: 'chohee' })">
@@ -720,13 +790,13 @@
             <div class="dm-last-msg dm-unread">???? · 방금 전</div>
           </div>
         </div>
-        <div id="chohee-group-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', '공초희 외 11명 &gt;', { chatId: 'chohee-group' })">
+        <div id="chohee-group-dm-item" class="dm-inbox-item" style="display:none;" onclick="navigate('view-dm-chat', getChoheeGroupTitle(), { chatId: 'chohee-group' })">
           <div class="group-avatar-stack">
             <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
             <img class="avatar-sub" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
           </div>
           <div class="dm-info">
-            <div class="dm-name">공초희, 이연우, 이예진 외 9명</div>
+          <div class="dm-name" id="chohee-group-dm-name">공초희 외 5명</div>
             <div class="dm-last-msg dm-unread">공초희: 사진 · 방금 전</div>
           </div>
         </div>
@@ -735,6 +805,10 @@
       <!-- 3.5 DM Chat View -->
       <div class="view-section" id="view-dm-chat" style="height:100%;">
         <div class="chat-messages" id="chat-box"></div>
+        <form class="chat-composer" id="chat-composer" onsubmit="sendChatMessage(event)">
+          <input class="chat-input" id="chat-input" type="text" placeholder="메시지 보내기..." autocomplete="off">
+          <button class="chat-send" type="submit" aria-label="메시지 보내기">↑</button>
+        </form>
       </div>
 
     </div>
@@ -755,6 +829,31 @@
         <div class="story-comment"><span class="story-comment-author">안민아</span><span class="story-comment-text">ㅋㅋㅎㅋㅎㅋㅎㅎ</span></div>
         <div class="story-comment"><span class="story-comment-author">안가윤</span><span class="story-comment-text">ㅋㄱㅋㄱㅋㄱㅋ</span></div>
         <div class="story-comment"><span class="story-comment-author">권보미</span><span class="story-comment-text">하경아~ㅋㅋㅋㄷ</span></div>
+      </div>
+    </div>
+
+    <div class="story-viewer" id="soomin-story-1-viewer" aria-hidden="true">
+      <div class="story-nav-zone story-nav-prev" onclick="closeSoominStory1()"></div>
+      <div class="story-nav-zone story-nav-next" onclick="goSoominStory2()"></div>
+      <img class="story-photo" src="C848294B-77DC-47A1-8081-E1D578F1D4F6.jpeg" alt="오수민의 스토리 이미지">
+      <div class="story-shade"></div><div class="story-progress"><span></span></div>
+      <div class="story-header">
+        <img class="story-header-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+        <div class="story-header-name">soomin_oh<span class="story-header-time">방금 전</span></div>
+        <button class="story-close" type="button" aria-label="스토리 닫기" onclick="closeSoominStory1()">×</button>
+      </div>
+    </div>
+
+    <div class="story-viewer" id="soomin-story-2-viewer" aria-hidden="true">
+      <div class="story-nav-zone story-nav-prev" onclick="goSoominStory1()"></div>
+      <div class="story-nav-zone story-nav-next" onclick="closeSoominStory2()"></div>
+      <img class="story-photo" src="721603F3-A8DD-44F2-94B7-D17582F8FD50.jpeg" alt="오수민의 친한친구 스토리 이미지">
+      <div class="story-shade"></div><div class="story-progress"><span></span></div>
+      <div class="close-friend-badge">친한친구</div>
+      <div class="story-header">
+        <img class="story-header-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" alt="">
+        <div class="story-header-name">soomin_oh<span class="story-header-time">방금 전</span></div>
+        <button class="story-close" type="button" aria-label="스토리 닫기" onclick="closeSoominStory2()">×</button>
       </div>
     </div>
 
@@ -783,6 +882,34 @@
 
 <script>
   // 1. Realtime Date Logic
+  const YEBIN_STORY_DELAY_MS = 10 * 60 * 1000;
+  const yebinStoryStartTime = Date.now();
+
+  function isYebinStoryUnlocked() {
+    return Date.now() - yebinStoryStartTime >= YEBIN_STORY_DELAY_MS;
+  }
+
+  function updateYebinStoryVisibility() {
+    const unlocked = isYebinStoryUnlocked();
+    document.getElementById('yebin-story-item').hidden = !unlocked;
+
+    if (!unlocked) closeYebinStory();
+
+    const profileAvatar = document.getElementById('profile-avatar');
+    if (document.getElementById('prof-name').innerText === '류예빈') {
+      profileAvatar.classList.toggle('has-story', unlocked);
+      profileAvatar.onclick = unlocked ? openYebinStory : null;
+    }
+  }
+
+  function scheduleYebinStoryReveal() {
+    updateYebinStoryVisibility();
+    if (!isYebinStoryUnlocked()) {
+      setTimeout(scheduleYebinStoryReveal, 250);
+    }
+  }
+
+  scheduleYebinStoryReveal();
   function updateClock() {
     const now = new Date();
     const hrs = String(now.getHours()).padStart(2, '0');
@@ -834,7 +961,45 @@
     viewer.setAttribute('aria-hidden', 'true');
   }
 
+  function openSoominStory1() {
+    if(Date.now() - harassmentStartTime < 5 * 60 * 1000) return;
+    const viewer = document.getElementById('soomin-story-1-viewer');
+    viewer.classList.add('active');
+    viewer.setAttribute('aria-hidden', 'false');
+  }
+
+  function goSoominStory2() {
+    if(Date.now() - harassmentStartTime < 8 * 60 * 1000) return;
+    closeSoominStory1();
+    openSoominStory2();
+  }
+
+  function goSoominStory1() {
+    closeSoominStory2();
+    openSoominStory1();
+  }
+
+  function closeSoominStory1() {
+    const viewer = document.getElementById('soomin-story-1-viewer');
+    viewer.classList.remove('active');
+    viewer.setAttribute('aria-hidden', 'true');
+  }
+
+  function openSoominStory2() {
+    if(Date.now() - harassmentStartTime < 8 * 60 * 1000) return;
+    const viewer = document.getElementById('soomin-story-2-viewer');
+    viewer.classList.add('active');
+    viewer.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeSoominStory2() {
+    const viewer = document.getElementById('soomin-story-2-viewer');
+    viewer.classList.remove('active');
+    viewer.setAttribute('aria-hidden', 'true');
+  }
+
   function openYebinStory() {
+    if (!isYebinStoryUnlocked()) return;
     const viewer = document.getElementById('yebin-story-viewer');
     viewer.classList.add('active');
     viewer.setAttribute('aria-hidden', 'false');
@@ -896,30 +1061,197 @@
   const db = {};
   studentList.forEach(s => db[s.u] = { u: s.u, n: s.n, pfp: D_PFP, followers: [], following: [] });
 
-  // Initial Hakyeong Relations (gaeun_l is NOT followed)
-  const hFwing = ["jiwon_choi","seohyun_w","chaemin_j","jiwoo_lee","seoyoon_j","jimin_koo","soomin_oh","jiyoon_n","hyunseo_kwon","soyool_k","yeonwoo_l","yejin_l","yoona_k"];
-  const hFwers = ["jiwon_choi","seohyun_w","minseo_k","gaeun_l","chaemin_j","chohee_g","yebin_r","jiwoo_lee","seoyoon_j","jimin_koo","soomin_oh","jiyoon_n","hyunseo_kwon","dain_lee","seowoo_l","haena_p","jaein_p","sooyeon_c","seoeun_c","seoin_h","heeyoon_j","chaeyoon_l","mina_an"];
-  
-  hFwing.forEach(t => { db["050412_"].following.push(t); db[t].followers.push("050412_"); });
-  hFwers.forEach(t => { db["050412_"].followers.push(t); db[t].following.push("050412_"); });
+  const allHandles = studentList.map(student => student.u);
+  const fixedCounts = {
+    "050412_": { followers: 12, following: 12 },
+    "yebin_r": { followers: 10, following: 15 },
+    "seul_y": { followers: 10, following: 10 },
+    "chohee_g": { followers: 15, following: 14 },
+    "gaeun_l": { followers: 17, following: 11 }
+  };
+  const hakyeongExcluded = new Set(["yebin_r", "seul_y", "chohee_g", "gaeun_l"]);
 
-  // Add a deterministic relationship ring so each profile has at least 12 followers and following.
-  const networkHandles = studentList.map(student => student.u).filter(handle => handle !== "050412_");
-  networkHandles.forEach((handle, index) => {
-    for (let offset = 1; offset <= 12; offset++) {
-      const target = networkHandles[(index + offset) % networkHandles.length];
-      if (!db[handle].following.includes(target)) {
-        db[handle].following.push(target);
-        if (!db[target].followers.includes(handle)) db[target].followers.push(handle);
-      }
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function shuffle(items) {
+    const result = [...items];
+    for(let index = result.length - 1; index > 0; index--) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+    }
+    return result;
+  }
+
+  const followerCounts = {};
+  const followingCounts = {};
+  let fixedFollowerTotal = 0;
+  let fixedFollowingTotal = 0;
+
+  allHandles.forEach(handle => {
+    if(fixedCounts[handle]) {
+      followerCounts[handle] = fixedCounts[handle].followers;
+      followingCounts[handle] = fixedCounts[handle].following;
+      fixedFollowerTotal += followerCounts[handle];
+      fixedFollowingTotal += followingCounts[handle];
+    } else {
+      followerCounts[handle] = randomInt(10, 30);
+      followingCounts[handle] = randomInt(10, 30);
     }
   });
 
-  const underConnectedUsers = studentList.filter(({ u }) =>
-    db[u].following.length <= 10 || db[u].followers.length <= 10
-  );
-  if (underConnectedUsers.length) {
-    throw new Error(`Profiles must each have more than 10 followers and following: ${underConnectedUsers.map(({ u }) => u).join(", ")}`);
+  const remainingHandles = allHandles.filter(handle => !fixedCounts[handle]);
+  const neededRandomDifference = fixedFollowerTotal - fixedFollowingTotal;
+
+  let randomDifference = null;
+  for(let pass = 0; pass < 100; pass++) {
+    remainingHandles.forEach(handle => {
+      followerCounts[handle] = randomInt(10, 30);
+      followingCounts[handle] = randomInt(10, 30);
+    });
+
+    randomDifference = remainingHandles.reduce((sum, handle) =>
+      sum + followingCounts[handle] - followerCounts[handle], 0
+    );
+
+    for(const handle of shuffle(remainingHandles)) {
+      while(randomDifference > neededRandomDifference && followingCounts[handle] > 10) {
+        followingCounts[handle]--;
+        randomDifference--;
+      }
+      while(randomDifference > neededRandomDifference && followerCounts[handle] < 30) {
+        followerCounts[handle]++;
+        randomDifference--;
+      }
+      while(randomDifference < neededRandomDifference && followingCounts[handle] < 30) {
+        followingCounts[handle]++;
+        randomDifference++;
+      }
+      while(randomDifference < neededRandomDifference && followerCounts[handle] > 10) {
+        followerCounts[handle]--;
+        randomDifference++;
+      }
+      if(randomDifference === neededRandomDifference) break;
+    }
+
+    if(randomDifference === neededRandomDifference) break;
+  }
+
+  if(randomDifference !== neededRandomDifference) {
+    throw new Error("Random follower/following totals could not be balanced.");
+  }
+
+  const totalFollowers = allHandles.reduce((sum, handle) => sum + followerCounts[handle], 0);
+  const totalFollowing = allHandles.reduce((sum, handle) => sum + followingCounts[handle], 0);
+  if(totalFollowers !== totalFollowing) {
+    throw new Error("Follower and following totals are not balanced.");
+  }
+
+  function buildRelations() {
+    allHandles.forEach(handle => {
+      db[handle].followers = [];
+      db[handle].following = [];
+    });
+
+    const sourceOffset = 1;
+    const targetOffset = 1 + allHandles.length;
+    const sink = targetOffset + allHandles.length;
+    const graph = Array.from({ length: sink + 1 }, () => []);
+
+    function addFlowEdge(from, to, capacity) {
+      const forward = { to, capacity, reverse: graph[to].length };
+      const reverse = { to: from, capacity: 0, reverse: graph[from].length };
+      graph[from].push(forward);
+      graph[to].push(reverse);
+      return forward;
+    }
+
+    allHandles.forEach((source, sourceIndex) => {
+      addFlowEdge(0, sourceOffset + sourceIndex, followingCounts[source]);
+    });
+
+    const allowedPairs = [];
+    allHandles.forEach((source, sourceIndex) => {
+      shuffle(allHandles).forEach((target, targetIndex) => {
+        const realTargetIndex = allHandles.indexOf(target);
+        if(target === source) return;
+        if(source === "050412_" && hakyeongExcluded.has(target)) return;
+        if(target === "050412_" && hakyeongExcluded.has(source)) return;
+
+        const edgeRef = addFlowEdge(sourceOffset + sourceIndex, targetOffset + realTargetIndex, 1);
+        allowedPairs.push({ sourceIndex, targetIndex: realTargetIndex, edgeRef });
+      });
+    });
+
+    allHandles.forEach((target, targetIndex) => {
+      addFlowEdge(targetOffset + targetIndex, sink, followerCounts[target]);
+    });
+
+    let maxFlow = 0;
+    while(true) {
+      const level = Array(graph.length).fill(-1);
+      const queue = [0];
+      level[0] = 0;
+      for(let head = 0; head < queue.length; head++) {
+        const node = queue[head];
+        for(const edge of graph[node]) {
+          if(edge.capacity > 0 && level[edge.to] === -1) {
+            level[edge.to] = level[node] + 1;
+            queue.push(edge.to);
+          }
+        }
+      }
+      if(level[sink] === -1) break;
+
+      const nextEdge = Array(graph.length).fill(0);
+      function send(node, available) {
+        if(node === sink) return available;
+        for(; nextEdge[node] < graph[node].length; nextEdge[node]++) {
+          const edge = graph[node][nextEdge[node]];
+          if(edge.capacity > 0 && level[edge.to] === level[node] + 1) {
+            const sent = send(edge.to, Math.min(available, edge.capacity));
+            if(sent > 0) {
+              edge.capacity -= sent;
+              graph[edge.to][edge.reverse].capacity += sent;
+              return sent;
+            }
+          }
+        }
+        return 0;
+      }
+
+      while(true) {
+        const sent = send(0, Number.MAX_SAFE_INTEGER);
+        if(sent === 0) break;
+        maxFlow += sent;
+      }
+    }
+
+    const expectedFlow = allHandles.reduce((sum, handle) => sum + followingCounts[handle], 0);
+    if(maxFlow !== expectedFlow) return false;
+
+    allowedPairs.forEach(({ sourceIndex, targetIndex, edgeRef }) => {
+      if(edgeRef.capacity === 0) {
+        const source = allHandles[sourceIndex];
+        const target = allHandles[targetIndex];
+        db[source].following.push(target);
+        db[target].followers.push(source);
+      }
+    });
+
+    return allHandles.every(handle =>
+      db[handle].following.length === followingCounts[handle] &&
+      db[handle].followers.length === followerCounts[handle]
+    );
+  }
+
+  let relationsBuilt = false;
+  for(let attempt = 0; attempt < 5000 && !relationsBuilt; attempt++) {
+    relationsBuilt = buildRelations();
+  }
+  if(!relationsBuilt) {
+    throw new Error("Follower and following counts could not be assigned consistently.");
   }
 
   // 4. Navigation & History Stack (파도타기)
@@ -928,6 +1260,10 @@
   let gaeunTriggered = false;
   let choheeTriggered = false;
   let notificationTimeout = null;
+  let hyunseoJoined = false;
+  let haenaJoined = false;
+  let jiyoonCommentAdded = false;
+  const harassmentStartTime = Date.now();
 
   function getUnreadDmCount() {
     return 1 + Number(gaeunTriggered) + (choheeTriggered ? 2 : 0);
@@ -960,6 +1296,7 @@
 
     // Update Header
     document.getElementById('ig-title').innerText = state.title;
+    updateChoheeGroupMemberVisibility();
     document.getElementById('ig-back-btn').style.display = (historyStack.length > 0) ? 'block' : 'none';
     
     const isMain = state.viewId === 'view-feed' || (state.viewId === 'view-profile' && state.title === '050412_');
@@ -1009,10 +1346,14 @@
     document.getElementById('prof-followers').innerText = user.followers.length;
     document.getElementById('prof-following').innerText = user.following.length;
     const profileAvatar = document.getElementById('profile-avatar');
-    const hasStory = username === "chaemin_j" || username === "yebin_r";
+    const hasStory = username === "chaemin_j" ||
+      (username === "yebin_r" && isYebinStoryUnlocked()) ||
+      (username === "soomin_oh" && Date.now() - harassmentStartTime >= 5 * 60 * 1000);
     profileAvatar.classList.toggle('has-story', hasStory);
     profileAvatar.alt = `${user.n} 프로필 사진`;
-    profileAvatar.onclick = username === "chaemin_j" ? openChaeminStory : username === "yebin_r" ? openYebinStory : null;
+    profileAvatar.onclick = username === "chaemin_j" ? openChaeminStory :
+      username === "yebin_r" ? openYebinStory :
+      username === "soomin_oh" ? openSoominStory1 : null;
     
     const actBtn = document.getElementById('prof-action-container');
     if(username === "050412_") {
@@ -1023,12 +1364,73 @@
     }
 
     const grid = document.getElementById('prof-grid-container');
-    if(username === "jiwon_choi") {
-      document.getElementById('prof-posts').innerText = "1";
-      grid.innerHTML = `<div class="profile-grid"><img class="grid-item" src="image_2.jpeg" alt="최지원의 게시물 사진" onerror="this.onerror=null;this.src='image-placeholder.svg'" onclick="goHomeFeed()"></div>`;
+    const profilePosts = {
+      jiwon_choi: { count: "1", src: "image_2.jpeg", alt: "최지원의 게시물 사진" },
+      sihyeon_s: { count: "1", src: "4BD9EFE1-1972-4CF7-97EF-11CD5A91EDC3.jpeg", alt: "성시현의 게시물 사진" },
+      haerin_d: { count: "1", src: "IMG_2132.jpeg", alt: "도해린의 게시물 사진" },
+      chanmi_b: { count: "1", src: "ccdr 2026-10-23 1726524EE1B88905F1.jpeg", alt: "변찬미의 게시물 사진" }
+    };
+    const profilePost = profilePosts[username];
+    if(profilePost) {
+      document.getElementById('prof-posts').innerText = profilePost.count;
+      grid.innerHTML = `<div class="profile-grid"><img class="grid-item" src="${profilePost.src}" alt="${profilePost.alt}" onclick="goHomeFeed()"></div>`;
     } else {
       document.getElementById('prof-posts').innerText = "0";
       grid.innerHTML = `<div class="empty-feed">아직 올라온 게시물이 없습니다</div>`;
+    }
+  }
+
+  function getChoheeGroupMembers() {
+    return ["chohee_g", "yeonwoo_l", "yejin_l", "yoona_k", "dain_lee", "050412_"];
+  }
+
+  function getChoheeGroupTitle() {
+    return `공초희 외 ${getChoheeGroupMembers().length - 1}명`;
+  }
+
+  function getMainGroupMembers() {
+    const members = ["seohyun_w", "seoyoon_j", "jimin_koo", "050412_"];
+    if(hyunseoJoined) members.splice(3, 0, "hyunseo_kwon");
+    if(haenaJoined) members.push("haena_p");
+    return members;
+  }
+
+  function getMainGroupTitle() {
+    return `우서현 외 ${getMainGroupMembers().length - 1}명`;
+  }
+
+  function updateChoheeGroupMemberVisibility() {
+    const members = getChoheeGroupMembers();
+    const dmName = document.getElementById("chohee-group-dm-name");
+    if(dmName) dmName.innerText = `공초희 외 ${members.length - 1}명`;
+    const mainDmName = document.getElementById("main-group-dm-name");
+    if(mainDmName) {
+      const mainMembers = getMainGroupMembers();
+      mainDmName.innerText = `우서현, 조서윤, 구지민 외 ${mainMembers.length - 3}명`;
+    }
+    const mainLastMsg = document.getElementById("main-group-last-msg");
+    if(mainLastMsg && haenaJoined) {
+      mainLastMsg.innerText = "박재인: 박재인 개웃기넼ㄷㅋㄷㅋ · 방금 전";
+    }
+
+    if(currentState &&
+      currentState.viewId === "view-dm-chat" &&
+      currentState.context &&
+      currentState.context.chatId === "chohee-group") {
+      document.getElementById("ig-title").innerText = getChoheeGroupTitle();
+      currentState.title = getChoheeGroupTitle();
+    }
+    if(currentState &&
+      currentState.viewId === "view-dm-chat" &&
+      currentState.context &&
+      currentState.context.chatId === "group") {
+      document.getElementById("ig-title").innerText = getMainGroupTitle();
+      currentState.title = getMainGroupTitle();
+    }
+
+    if(currentState && currentState.viewId === "view-list" && currentState.context &&
+      currentState.context.type === "chohee-members") {
+      renderList("chohee-members");
     }
   }
 
@@ -1038,9 +1440,9 @@
     let arr = [];
 
     if(type === 'dm-members') {
-      arr = ["seohyun_w", "seoyoon_j", "jimin_koo", "jiwoo_lee", "soomin_oh", "jiyoon_n", "hyunseo_kwon", "050412_"];
+      arr = getMainGroupMembers();
     } else if(type === 'chohee-members') {
-      arr = ["chohee_g", "yeonwoo_l", "yejin_l", "yoona_k", "dain_lee", "seowoo_l", "haena_p", "jaein_p", "sooyeon_c", "seoeun_c", "seoin_h", "050412_"];
+      arr = getChoheeGroupMembers();
     } else {
       arr = type === 'followers' ? [...db[targetUser].followers] : [...db[targetUser].following];
       if(arr.includes("050412_")) { arr = arr.filter(x => x !== "050412_"); arr.unshift("050412_"); }
@@ -1068,6 +1470,15 @@
   }
 
   // 5. Follow & Ga-eun Trigger Logic
+  function updateHwangEvidenceVisibility() {
+    const evidenceComment = document.getElementById('seoin-evidence-comment');
+    if(evidenceComment) {
+      evidenceComment.hidden = !choheeTriggered ||
+        !db["050412_"].following.includes("chohee_g");
+    }
+    updateChoheeGroupMemberVisibility();
+  }
+
   function toggleFollowBtn(target) {
     const ha = db["050412_"];
     const t = db[target];
@@ -1077,9 +1488,11 @@
       ha.following.splice(idx, 1);
       const fIdx = t.followers.indexOf("050412_");
       if(fIdx > -1) t.followers.splice(fIdx, 1);
+      if(target === "chohee_g") updateHwangEvidenceVisibility();
     } else {
       ha.following.push(target);
       if(!t.followers.includes("050412_")) t.followers.push("050412_");
+      if(target === "chohee_g") updateHwangEvidenceVisibility();
       
       // Realtime DM triggers
       if(target === "gaeun_l" && !gaeunTriggered) {
@@ -1096,6 +1509,7 @@
           document.getElementById('chohee-dm-item').style.display = 'flex';
           document.getElementById('chohee-group-dm-item').style.display = 'flex';
           showDmNotification("chohee_g", "????", "chohee");
+          updateHwangEvidenceVisibility();
         }, 500);
       }
     }
@@ -1119,6 +1533,7 @@
     const chatId = banner.dataset.chatId || 'gaeun';
     banner.classList.remove('show');
     if(chatId === 'chohee') navigate('view-dm-chat', 'chohee_g', { chatId: 'chohee' });
+    else if(chatId === 'jiwoo') navigate('view-dm-chat', 'jiwoo_lee', { chatId: 'jiwoo' });
     else navigate('view-dm-chat', 'gaeun_l', { chatId: 'gaeun' });
   }
 
@@ -1130,8 +1545,13 @@
       { s: "seohyun_w", t: "현활인거 다 보여" }, { s: "seohyun_w", t: "하경아~~" }, { s: "seohyun_w", t: "야" },
       { s: "seohyun_w", t: "읽으라고" }, { s: "seoyoon_j", t: "ㅋㅋㅋㅋㅋㅋ" }, { s: "jimin_koo", t: "ㅋㅋㅋㅋㅋㄱㅋㄱㄱ" }
     ],
+    jiwoo: [
+      { s: "jiwoo_lee", t: "야" },
+      { s: "jiwoo_lee", t: "학교에서 쳐다보지마" },
+      { s: "jiwoo_lee", t: "기분 더러워" }
+    ],
     gaeun: [
-      { s: "gaeun_l", t: "?" }, { s: "gaeun_l", t: "뭐해ㅋㅋ" }
+      { s: "gaeun_l", t: "?" }, { s: "gaeun_l", t: "ㅋㅋㅋㅋㅋㅋ당당하네" }
     ],
     chohee: [
       { s: "chohee_g", t: "????" }
@@ -1141,17 +1561,37 @@
     ]
   };
 
+  function sendChatMessage(event) {
+    event.preventDefault();
+    if(!currentState || currentState.viewId !== 'view-dm-chat') return;
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(!text) return;
+    const chatId = currentState.context.chatId;
+    if(!msgs[chatId]) msgs[chatId] = [];
+    msgs[chatId].push({ s: "050412_", t: text });
+    input.value = '';
+    renderChat(chatId);
+  }
+
   function renderChat(chatId) {
     const box = document.getElementById('chat-box');
     box.innerHTML = '';
     let prev = "";
     msgs[chatId].forEach(m => {
+      if(m.type === "system") {
+        box.innerHTML += `<div class="system-message">${m.t}</div>`;
+        prev = "";
+        return;
+      }
       const u = db[m.s];
       const header = m.s !== prev;
       const messageContent = m.type === "image"
         ? `<img class="msg-image" src="${m.src}" alt="${m.alt}">`
         : `<div class="msg-bubble">${m.t}</div>`;
-      if(header) {
+      if(m.s === "050412_") {
+        box.innerHTML += `<div class="msg-group mine"><div class="msg-content">${messageContent}</div></div>`;
+      } else if(header) {
         box.innerHTML += `
           <div class="msg-group">
             <img class="msg-avatar" src="${u.pfp}" onclick="navigate('view-profile', '${u.u}')">
@@ -1161,12 +1601,136 @@
             </div>
           </div>`;
       } else {
-        box.innerHTML += `<div class="msg-group"><div style="width:36px;"></div><div class="msg-content">${messageContent}</div></div>`;
+        box.innerHTML += `<div class="msg-group"><div style="width:28px;"></div><div class="msg-content">${messageContent}</div></div>`;
       }
       prev = m.s;
     });
     box.scrollTop = box.scrollHeight;
   }
+
+  const harassmentSchedule = {
+    jiwooDmShown: false,
+    soominStory1Shown: false,
+    soominStory2Shown: false,
+    soominStory2Removed: false,
+    jiyoonCommentAdded: false,
+    hyunseoJoined: false,
+    hyunseoMessageSent: false,
+    seowooPostAdded: false,
+    haenaJoinedGroup: false,
+    seoinCommentAdded: false
+  };
+
+  function scheduleHarassmentEvents() {
+    const elapsed = Date.now() - harassmentStartTime;
+
+    if(!harassmentSchedule.seowooPostAdded && elapsed >= 17 * 60 * 1000) {
+      harassmentSchedule.seowooPostAdded = true;
+      const feed = document.getElementById('view-feed');
+      const storyTray = feed.querySelector('.story-tray');
+      if(feed && storyTray && !document.getElementById('seowoo-harassment-post')) {
+        const post = document.createElement('div');
+        post.className = 'feed-post';
+        post.id = 'seowoo-harassment-post';
+        post.innerHTML = `
+          <div class="post-header">
+            <img class="post-avatar" src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" onclick="navigate('view-profile', 'seowoo_l')">
+            <span class="post-author" onclick="navigate('view-profile', 'seowoo_l')">seowoo_l</span>
+          </div>
+          <img class="post-img" src="IMG_1041.jpeg" alt="이서우의 게시물 사진">
+          <div class="post-actions">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" style="margin-right:12px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+          </div>
+          <div class="post-likes">좋아요 48개</div>
+          <div class="post-caption"><span class="comment-author" onclick="navigate('view-profile', 'seowoo_l')">seowoo_l</span> #추천</div>
+          <div class="post-comments">
+            <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'haena_p')">박해나</span> ㄹㅈㄷ다</div>
+            <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'jaein_p')">박재인</span> 이쁘다</div>
+            <div class="comment-row"><span class="comment-author" onclick="navigate('view-profile', 'sooyeon_c')">최수연</span> 미녀다</div>
+            <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'seowoo_l')">이서우</span> 아니 나 오늘 ㅇㅎㄱ 봄;;;;</div>
+            <div class="comment-row reply-row"><span class="comment-author" onclick="navigate('view-profile', 'sooyeon_c')">최수연</span> 아 에반데</div>
+          </div>`;
+        storyTray.insertAdjacentElement('afterend', post);
+      }
+    }
+
+    if(!harassmentSchedule.haenaJoinedGroup && elapsed >= 20 * 60 * 1000) {
+      harassmentSchedule.haenaJoinedGroup = true;
+      haenaJoined = true;
+      msgs.group.push({ type: 'system', t: '박해나님이 추가되었습니다.' });
+      msgs.group.push({ s: 'haena_p', type: 'image', src: 'IMG_1042.jpeg', alt: '박해나가 보낸 사진' });
+      msgs.group.push({ s: 'jaein_p', t: '박재인 개웃기넼ㄷㅋㄷㅋ' });
+      updateChoheeGroupMemberVisibility();
+      if(currentState && currentState.viewId === 'view-dm-chat' && currentState.context.chatId === 'group') {
+        renderChat('group');
+      }
+    }
+
+    if(!harassmentSchedule.seoinCommentAdded && elapsed >= 21 * 60 * 1000) {
+      harassmentSchedule.seoinCommentAdded = true;
+      const post = document.getElementById('jiwon-feed-post');
+      const comments = post && post.querySelector('.post-comments');
+      if(comments && !comments.querySelector('[data-seoin-comment="true"]')) {
+        const comment = document.createElement('div');
+        comment.className = 'comment-row';
+        comment.dataset.seoinComment = 'true';
+        comment.innerHTML = `<span class="comment-author" onclick="navigate('view-profile', 'seoin_h')">황서인</span> ㅎㄱ이 ㅜㅠㅜㅠㅋㄱㅋ`;
+        comments.appendChild(comment);
+      }
+    }
+
+    if(!harassmentSchedule.jiwooDmShown && elapsed >= 4 * 60 * 1000) {
+      harassmentSchedule.jiwooDmShown = true;
+      document.getElementById('jiwoo-dm-item').style.display = 'flex';
+      showDmNotification('jiwoo_lee', '기분 더러워', 'jiwoo');
+    }
+
+    if(!harassmentSchedule.soominStory1Shown && elapsed >= 5 * 60 * 1000) {
+      harassmentSchedule.soominStory1Shown = true;
+      document.getElementById('soomin-story-1').hidden = false;
+    }
+
+    if(!harassmentSchedule.soominStory2Shown && elapsed >= 8 * 60 * 1000) {
+      harassmentSchedule.soominStory2Shown = true;
+    }
+
+    if(!harassmentSchedule.soominStory2Removed && elapsed >= 9 * 60 * 1000 + 30 * 1000) {
+      harassmentSchedule.soominStory2Removed = true;
+      closeSoominStory2();
+    }
+
+    if(!harassmentSchedule.jiyoonCommentAdded && elapsed >= 9 * 60 * 1000) {
+      harassmentSchedule.jiyoonCommentAdded = true;
+      jiyoonCommentAdded = true;
+      const post = document.getElementById('jiwon-feed-post');
+      const comments = post && post.querySelector('.post-comments');
+      if(comments && !comments.querySelector('[data-jiyoon-comment="true"]')) {
+        const comment = document.createElement('div');
+        comment.className = 'comment-row';
+        comment.dataset.jiyoonComment = 'true';
+        comment.innerHTML = `<span class="comment-author" onclick="navigate('view-profile', 'jiyoon_n')">남지윤</span> 짜르니깐 더 예쁜듯ㅋㅋㅋ`;
+        comments.appendChild(comment);
+      }
+    }
+
+    if(!harassmentSchedule.hyunseoJoined && elapsed >= 3 * 60 * 1000) {
+      harassmentSchedule.hyunseoJoined = true;
+      hyunseoJoined = true;
+      msgs.group.push({ type: 'system', t: '권현서님이 추가되었습니다.' });
+      if(currentState && currentState.viewId === 'view-dm-chat' && currentState.context.chatId === 'group') renderChat('group');
+    }
+
+    if(harassmentSchedule.hyunseoJoined && !harassmentSchedule.hyunseoMessageSent && elapsed >= 3 * 60 * 1000 + 30 * 1000) {
+      harassmentSchedule.hyunseoMessageSent = true;
+      msgs.group.push({ s: 'hyunseo_kwon', t: 'ㅋㅋㅋㅋㅋㅋㅋ하경이 뭐해???' });
+      msgs.group.push({ type: 'system', t: '모두 읽음' });
+      if(currentState && currentState.viewId === 'view-dm-chat' && currentState.context.chatId === 'group') renderChat('group');
+    }
+  }
+
+  scheduleHarassmentEvents();
+  setInterval(scheduleHarassmentEvents, 250);
 </script>
 </body>
 </html>
