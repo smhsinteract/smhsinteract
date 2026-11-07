@@ -1261,9 +1261,11 @@
   let choheeTriggered = false;
   let notificationTimeout = null;
   let hyunseoJoined = false;
+  let yoobinJoined = false;
   let haenaJoined = false;
   let jiyoonCommentAdded = false;
   const harassmentStartTime = Date.now();
+  const mainGroupStartTime = harassmentStartTime;
 
   function getUnreadDmCount() {
     return 1 + Number(gaeunTriggered) + (choheeTriggered ? 2 : 0);
@@ -1391,6 +1393,7 @@
   function getMainGroupMembers() {
     const members = ["seohyun_w", "seoyoon_j", "jimin_koo", "050412_"];
     if(hyunseoJoined) members.splice(3, 0, "hyunseo_kwon");
+    if(yoobinJoined) members.push("yoobin_k");
     if(haenaJoined) members.push("haena_p");
     return members;
   }
@@ -1605,6 +1608,9 @@
       }
       prev = m.s;
     });
+    if(chatId === "group" || chatId === "chohee-group") {
+      box.innerHTML += `<div class="read-receipt">모두 읽음</div>`;
+    }
     box.scrollTop = box.scrollHeight;
   }
 
@@ -1616,6 +1622,7 @@
     jiyoonCommentAdded: false,
     hyunseoJoined: false,
     hyunseoMessageSent: false,
+    yoobinJoined: false,
     seowooPostAdded: false,
     haenaJoinedGroup: false,
     seoinCommentAdded: false
@@ -1623,8 +1630,9 @@
 
   function scheduleHarassmentEvents() {
     const elapsed = Date.now() - harassmentStartTime;
+    const mainGroupElapsed = Date.now() - mainGroupStartTime;
 
-    if(!harassmentSchedule.seowooPostAdded && elapsed >= 17 * 60 * 1000) {
+    if(!harassmentSchedule.seowooPostAdded && elapsed >= 15 * 60 * 1000) {
       harassmentSchedule.seowooPostAdded = true;
       const feed = document.getElementById('view-feed');
       const storyTray = feed.querySelector('.story-tray');
@@ -1655,7 +1663,7 @@
       }
     }
 
-    if(!harassmentSchedule.haenaJoinedGroup && elapsed >= 20 * 60 * 1000) {
+    if(!harassmentSchedule.haenaJoinedGroup && mainGroupElapsed >= 16 * 60 * 1000) {
       harassmentSchedule.haenaJoinedGroup = true;
       haenaJoined = true;
       msgs.group.push({ type: 'system', t: '박해나님이 추가되었습니다.' });
@@ -1667,7 +1675,7 @@
       }
     }
 
-    if(!harassmentSchedule.seoinCommentAdded && elapsed >= 21 * 60 * 1000) {
+    if(!harassmentSchedule.seoinCommentAdded && elapsed >= 12 * 60 * 1000) {
       harassmentSchedule.seoinCommentAdded = true;
       const post = document.getElementById('jiwon-feed-post');
       const comments = post && post.querySelector('.post-comments');
@@ -1724,8 +1732,17 @@
     if(harassmentSchedule.hyunseoJoined && !harassmentSchedule.hyunseoMessageSent && elapsed >= 3 * 60 * 1000 + 30 * 1000) {
       harassmentSchedule.hyunseoMessageSent = true;
       msgs.group.push({ s: 'hyunseo_kwon', t: 'ㅋㅋㅋㅋㅋㅋㅋ하경이 뭐해???' });
-      msgs.group.push({ type: 'system', t: '모두 읽음' });
       if(currentState && currentState.viewId === 'view-dm-chat' && currentState.context.chatId === 'group') renderChat('group');
+    }
+
+    if(!harassmentSchedule.yoobinJoined && mainGroupElapsed >= 4 * 60 * 1000) {
+      harassmentSchedule.yoobinJoined = true;
+      yoobinJoined = true;
+      msgs.group.push({ type: 'system', t: '강유빈님이 추가되었습니다.' });
+      updateChoheeGroupMemberVisibility();
+      if(currentState && currentState.viewId === 'view-dm-chat' && currentState.context.chatId === 'group') {
+        renderChat('group');
+      }
     }
   }
 
