@@ -882,7 +882,7 @@
 
 <script>
   // 1. Realtime Date Logic
-  const YEBIN_STORY_DELAY_MS = 10 * 60 * 1000;
+  const YEBIN_STORY_DELAY_MS = 7 * 60 * 1000 + 30 * 1000;
   const yebinStoryStartTime = Date.now();
 
   function isYebinStoryUnlocked() {
@@ -1632,7 +1632,7 @@
     const elapsed = Date.now() - harassmentStartTime;
     const mainGroupElapsed = Date.now() - mainGroupStartTime;
 
-    if(!harassmentSchedule.seowooPostAdded && elapsed >= 15 * 60 * 1000) {
+    if(!harassmentSchedule.seowooPostAdded && elapsed >= 7 * 60 * 1000) {
       harassmentSchedule.seowooPostAdded = true;
       const feed = document.getElementById('view-feed');
       const storyTray = feed.querySelector('.story-tray');
@@ -1663,7 +1663,7 @@
       }
     }
 
-    if(!harassmentSchedule.haenaJoinedGroup && mainGroupElapsed >= 16 * 60 * 1000) {
+    if(!harassmentSchedule.haenaJoinedGroup && mainGroupElapsed >= 8 * 60 * 1000 + 30 * 1000) {
       harassmentSchedule.haenaJoinedGroup = true;
       haenaJoined = true;
       msgs.group.push({ type: 'system', t: '박해나님이 추가되었습니다.' });
@@ -1675,7 +1675,7 @@
       }
     }
 
-    if(!harassmentSchedule.seoinCommentAdded && elapsed >= 12 * 60 * 1000) {
+    if(!harassmentSchedule.seoinCommentAdded && elapsed >= 6 * 60 * 1000 + 20 * 1000) {
       harassmentSchedule.seoinCommentAdded = true;
       const post = document.getElementById('jiwon-feed-post');
       const comments = post && post.querySelector('.post-comments');
@@ -1703,7 +1703,7 @@
       harassmentSchedule.soominStory2Shown = true;
     }
 
-    if(!harassmentSchedule.soominStory2Removed && elapsed >= 9 * 60 * 1000 + 30 * 1000) {
+    if(!harassmentSchedule.soominStory2Removed && elapsed >= 9 * 60 * 1000) {
       harassmentSchedule.soominStory2Removed = true;
       closeSoominStory2();
     }
